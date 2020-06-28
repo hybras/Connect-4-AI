@@ -14,6 +14,8 @@ async fn main() {
 }
 
 async fn hello() {
-    tokio::time::delay_for(Duration::from_secs(6)).await;
+    use rand::Rng;
+    let duration_sec = rand::thread_rng().gen_range(0, 10);
+    tokio::time::delay_for(Duration::from_secs(duration_sec)).await;
     println!("Hello, world!");
 }
