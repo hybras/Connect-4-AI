@@ -65,25 +65,31 @@ impl Board {
 	}
 
 	pub fn make_move(&mut self, player: Piece, col: usize) -> Result<(), String> {
-		if col < 7 {
+		if col < self.grid.len() {
 			match player {
 				Piece::Blue => {
 					if self.blue_moves.len() == self.red_moves.len() {
 						self.grid[col][self.find_height(col)] = player;
+						self.blue_moves.push(col as u8);
 						Ok(())
 					} else {
-						Err(String::from("Wrong Player Type"))
+						Err(String::from("Its Red's turn"))
 					}
 				}
 				Piece::Red => {
 					if self.blue_moves.len() == self.red_moves.len() + 1 {
 						self.grid[col][self.find_height(col)] = player;
+						self.red_moves.push(col as u8);
 						Ok(())
 					} else {
-						Err(String::from("Wrong Player Type"))
+						Err(String::from(format!(
+							"Its Blue's turn, blue:{}, red:{}",
+							self.blue_moves.len(),
+							self.red_moves.len()
+						)))
 					}
 				}
-				Piece::Empty => Err(String::from("Wrong Player Type")),
+				Piece::Empty => Err(String::from("Can not make an Empty turn")),
 			}
 		} else {
 			Err(String::from("Column too large"))
@@ -102,7 +108,8 @@ impl Board {
 }
 
 fn main() {
-	let board: Board = Default::default();
-
+	let mut board: Board = Default::default();
+	board.make_move(Piece::Blue, 0).unwrap();
+	board.make_move(Piece::Red, 1).unwrap();
 	println!("board:\n{}", board);
 }
