@@ -72,7 +72,7 @@ impl Board {
 					}
 				}
 				Piece::Red => {
-					if self.blue_moves.len() - 1 == self.red_moves.len() {
+					if self.blue_moves.len() == self.red_moves.len() + 1 {
 						self.grid[col][self.find_height(col)] = player;
 						Ok(())
 					} else {
@@ -87,15 +87,13 @@ impl Board {
 	}
 
 	fn find_height(&self, col: usize) -> usize {
-		let mut height = 0;
-
-		for cell_index in 0..7 {
+		for cell_index in 0..self.grid[col].len() {
 			match &self.grid[col][cell_index] {
-				Piece::Empty => height = cell_index,
-				_ => continue,
+				Piece::Empty => return cell_index,
+				_ => {}
 			}
 		}
-		height
+		0
 	}
 }
 
