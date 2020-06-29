@@ -41,6 +41,19 @@ impl Default for Board {
 		}
 	}
 }
+use std::fmt::{Display, Formatter};
+
+impl Display for Board {
+	fn fmt(&self, out: &mut Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
+		for col in 0..self.grid.len() {
+			for cell in self.grid[col].iter() {
+				write!(out, "{} ", cell.as_emoji())?;
+			}
+			writeln!(out)?;
+		}
+		Ok(())
+	}
+}
 
 impl Board {
 	fn new() -> Self {
@@ -86,4 +99,8 @@ impl Board {
 	}
 }
 
-fn main() {}
+fn main() {
+	let board: Board = Default::default();
+
+	println!("board:\n{}", board);
+}
