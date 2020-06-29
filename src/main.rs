@@ -60,6 +60,10 @@ impl Board {
 		Default::default()
 	}
 
+	fn moves(&self) -> u8 {
+		(self.red_moves.len() + self.blue_moves.len()) as u8
+	}
+
 	pub fn make_move(&mut self, player: Piece, col: usize) -> Result<(), String> {
 		if col < 7 {
 			match player {
