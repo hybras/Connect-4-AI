@@ -2,11 +2,17 @@ trait Repr {
 	fn as_ascii(&self) -> char;
 	fn as_emoji(&self) -> char;
 }
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, PartialEq)]
 pub enum Piece {
 	Red,
 	Blue,
 	Empty,
+}
+
+impl Display for Piece {
+	fn fmt(&self, out: &mut Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
+		Ok(write!(out, "{}", self.as_emoji())?)
+	}
 }
 
 impl Repr for Piece {
@@ -104,5 +110,61 @@ impl Board {
 			}
 		}
 		0
+	}
+
+	pub fn get_winner(&self) -> Option<Piece> {
+		for n in 0..self.grid.len() {
+			for i in 0..self.grid[n].len() {
+				let cell = self.grid[n][i];
+				return match cell {
+					Piece::Empty => continue,
+					_ => {
+						if (i < 4
+							&& n > 2 && self.grid[n][i] == cell
+							&& self.grid[n - 1][i + 1] == cell
+							&& self.grid[n - 2][i + 2] == cell
+							&& self.grid[n - 3][i + 3] == cell)
+							|| (i > 2
+								&& n > 2 && self.grid[n][i] == cell
+								&& self.grid[n - 1][i - 1] == cell
+								&& self.grid[n - 2][i - 2] == cell
+								&& self.grid[n - 3][i - 3] == cell)
+							|| (n < 3
+								&& self.grid[n][i] == cell && self.grid[n + 1][i] == cell
+								&& self.grid[n + 2][i] == cell && self.grid[n + 3][i] == cell)
+							|| (i < 4
+								&& self.grid[n][i] == cell && self.grid[n][i + 1] == cell
+								&& self.grid[n][i + 2] == cell && self.grid[n][i + 3] == cell)
+						{
+							Some(cell.clone())
+						} else if n == 0 && self.grid[n].iter().any(|cell| cell == &Piece::Empty) {
+							Some(Piece::Empty)
+						} else {
+							continue;
+						}
+					}
+				};
+			}
+		}
+		Option::None
+	}
+}
+
+#[cfg(test)]
+mod test {
+	use super::{Board, Piece};
+
+	#[test]
+	fn test_blue_wins() {
+		let mut board: Board = Default::default();
+		board.make_move(Piece::Blue, 0).unwrap();
+
+		for i in 0..3 {
+			board.make_move(Piece::Red, i + 1).unwrap();
+
+			board.make_move(Piece::Blue, 0).unwrap();
+		}
+		let winner = board.get_winner().unwrap();
+		assert!(winner == Piece::Blue, "Winner is {}", winner);
 	}
 }
