@@ -1,7 +1,3 @@
-trait Repr {
-	fn as_ascii(&self) -> char;
-	fn as_emoji(&self) -> char;
-}
 #[derive(Copy, Clone, PartialEq)]
 pub enum Piece {
 	Red,
@@ -11,24 +7,15 @@ pub enum Piece {
 
 impl Display for Piece {
 	fn fmt(&self, out: &mut Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
-		Ok(write!(out, "{}", self.as_emoji())?)
-	}
-}
-
-impl Repr for Piece {
-	fn as_ascii(&self) -> char {
-		match self {
-			Piece::Red => 'X',
-			Piece::Blue => 'O',
-			Piece::Empty => ' ',
-		}
-	}
-	fn as_emoji(&self) -> char {
-		match self {
-			Piece::Red => '🔴',
-			Piece::Blue => '🔵',
-			Piece::Empty => '⚪',
-		}
+		Ok(write!(
+			out,
+			"{}",
+			match self {
+				Piece::Red => '🔴',
+				Piece::Blue => '🔵',
+				Piece::Empty => '⚪',
+			}
+		)?)
 	}
 }
 
@@ -53,7 +40,7 @@ impl Display for Board {
 	fn fmt(&self, out: &mut Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
 		for col in 0..self.grid.len() {
 			for cell in self.grid[col].iter() {
-				write!(out, "{} ", cell.as_emoji())?;
+				write!(out, "{} ", cell)?;
 			}
 			writeln!(out)?;
 		}
