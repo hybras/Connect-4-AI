@@ -143,15 +143,13 @@ impl Board {
 		None
 	}
 
-	fn negamax_score(&mut self) -> i32 {
+	pub fn negamax_score(&mut self) -> i32 {
 		use std::convert::TryInto;
 		if self.num_moves() >= self.width * self.height {
 			return 0;
 		}
 		for col_index in 0..self.width {
-			if self.is_playable(col_index)
-			/*&& is a winning move*/
-			{
+			if self.is_winning_move(col_index).is_ok() {
 				return (self.width * self.height + 1 - self.num_moves() / 2)
 					.try_into()
 					.unwrap();
@@ -175,6 +173,16 @@ impl Board {
 			}
 		}
 		best
+	}
+
+	fn is_winning_move(&mut self, col: usize) -> Result<bool, ()> {
+		match self.make_move(col) {
+			Ok(_) => {
+				self.moves.pop();
+				Ok(self.get_winner().is_some())
+			}
+			Err(_) => Err(()),
+		}
 	}
 }
 
