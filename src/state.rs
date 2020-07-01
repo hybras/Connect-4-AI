@@ -1,3 +1,4 @@
+/// A board piece. Used to represent the a Piece (and the absence of one) in a board grid, as well as the players. That last one was a bad design choice.
 #[derive(Copy, Clone, PartialEq)]
 pub enum Piece {
 	Red,
@@ -18,13 +19,14 @@ impl Display for Piece {
 		)?)
 	}
 }
-
+/// The board of connect 4 game. Contains the board's height and width, as well as move history, as a Vec of columns.
 pub struct Board {
 	moves: Vec<usize>,
 	height: usize,
 	width: usize,
 }
 
+/// Constructs the default 6x7 board.
 impl Default for Board {
 	fn default() -> Self {
 		Self::new()
@@ -54,10 +56,12 @@ impl Board {
 		}
 	}
 
+	/// The number of moves played so far
 	fn num_moves(&self) -> u8 {
 		self.moves.len() as u8
 	}
 
+	/// Function checks if a column is playable (ie not full) and records the move.
 	pub fn make_move(&mut self, col: usize) -> Result<(), String> {
 		use std::convert::TryInto;
 
@@ -77,14 +81,17 @@ impl Board {
 		}
 	}
 
+	/// The number of pieces, or height, in a given column of the board.
 	fn find_height(&self, col: usize) -> usize {
 		self.moves.iter().filter(|&&c| col == c as usize).count()
 	}
 
+	/// Whether the number of pieces in a column is below max height
 	fn is_playable(&self, col: usize) -> bool {
 		self.find_height(col) < self.height
 	}
 
+	/// The board as a 2d grid, instead of as a list of moves. The innermost vec is a columns. Access cells as `as_2d()[col][row]`
 	fn as_2d(&self) -> Vec<Vec<Piece>> {
 		let mut grid = vec![vec![Piece::Empty; self.height]; self.width];
 		let mut heights = vec![0; self.width];
@@ -97,6 +104,7 @@ impl Board {
 		grid
 	}
 
+	/// The option represents whether a winner exists. `Some(Piece::Empty)` indicates a tie.
 	pub fn get_winner(&self) -> Option<Piece> {
 		let grid = self.as_2d();
 		for n in 0..self.width {
