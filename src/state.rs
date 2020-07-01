@@ -87,7 +87,7 @@ impl Board {
 	fn as_2d(&self) -> Vec<Vec<Piece>> {
 		let mut grid = vec![vec![Piece::Empty; self.height]; self.width];
 		let mut heights = vec![0; self.width];
-		for col_index in self.moves {
+		for &col_index in &self.moves {
 			grid[col_index][heights[col_index]] = Piece::Blue;
 			heights[col_index] += 1;
 		}
@@ -108,10 +108,8 @@ impl Board {
 							&& grid[n - 2][i + 2] == cell
 							&& grid[n - 3][i + 3] == cell)
 							|| (i > 2
-								&& n > 2 && grid[n][i] == cell
-								&& grid[n - 1][i - 1] == cell
-								&& grid[n - 2][i - 2] == cell
-								&& grid[n - 3][i - 3] == cell)
+								&& n > 2 && grid[n][i] == cell && grid[n - 1][i - 1] == cell
+								&& grid[n - 2][i - 2] == cell && grid[n - 3][i - 3] == cell)
 							|| (n < 3
 								&& grid[n][i] == cell && grid[n + 1][i] == cell
 								&& grid[n + 2][i] == cell && grid[n + 3][i] == cell)
