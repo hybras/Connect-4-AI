@@ -1,9 +1,8 @@
-/// A board piece. Used to represent the a Piece (and the absence of one) in a board grid, as well as the players. That last one was a bad design choice.
+/// A board piece. Used to represent the a Piece (and the absence of one) in a board grid, as well as the players.
 #[derive(Copy, Clone, PartialEq)]
 pub enum Piece {
 	Red,
 	Blue,
-	Empty,
 }
 
 impl Display for Piece {
@@ -14,7 +13,6 @@ impl Display for Piece {
 			match self {
 				Piece::Red => '🔴',
 				Piece::Blue => '🔵',
-				Piece::Empty => '⚪',
 			}
 		)?)
 	}
@@ -38,8 +36,11 @@ impl Display for Board {
 	fn fmt(&self, out: &mut Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
 		let grid = self.as_2d();
 		for col in grid {
-			for cell in col {
-				write!(out, "{} ", cell)?;
+			for opt_cell in col {
+				match opt_cell {
+					Some(cell) => write!(out, "{} ", cell)?,
+					None => write!(out, "⚪ ")?,
+				}
 			}
 			writeln!(out)?;
 		}
@@ -90,12 +91,13 @@ impl Board {
 	}
 
 	/// The board as a 2d grid, instead of as a list of moves. The innermost vec is a columns. Access cells as `as_2d()[col][row]`
-	fn as_2d(&self) -> Vec<Vec<Piece>> {
-		let mut grid = vec![vec![Piece::Empty; self.height]; self.width];
+	fn as_2d(&self) -> Vec<Vec<Option<Piece>>> {
+		let mut grid = vec![vec![None; self.height]; self.width];
 		let mut heights = vec![0; self.width];
 		let mut is_blue = true;
 		for &col_index in &self.moves {
-			grid[col_index][heights[col_index]] = if is_blue { Piece::Blue } else { Piece::Red };
+			grid[col_index][heights[col_index]] =
+				Some(if is_blue { Piece::Blue } else { Piece::Red });
 			heights[col_index] += 1;
 			is_blue = !is_blue;
 		}
@@ -103,32 +105,34 @@ impl Board {
 	}
 
 	/// The option represents whether a winner exists. `Some(Piece::Empty)` indicates a tie.
-	pub fn get_winner(&self) -> Option<Piece> {
+	pub fn get_winner(&self) -> Option<Option<Piece>> {
 		let grid = self.as_2d();
 		for n in 0..self.width {
 			for i in 0..self.height {
-				let cell = grid[n][i];
-				return match cell {
-					Piece::Empty => continue,
-					_ => {
+				let opt_cell = grid[n][i];
+				return match opt_cell {
+					None => continue,
+					Some(_) => {
 						if (i < 4
-							&& n > 2 && grid[n][i] == cell
-							&& grid[n - 1][i + 1] == cell
-							&& grid[n - 2][i + 2] == cell
-							&& grid[n - 3][i + 3] == cell)
+							&& n > 2 && grid[n][i] == opt_cell
+							&& grid[n - 1][i + 1] == opt_cell
+							&& grid[n - 2][i + 2] == opt_cell
+							&& grid[n - 3][i + 3] == opt_cell)
 							|| (i > 2
-								&& n > 2 && grid[n][i] == cell && grid[n - 1][i - 1] == cell
-								&& grid[n - 2][i - 2] == cell && grid[n - 3][i - 3] == cell)
+								&& n > 2 && grid[n][i] == opt_cell
+								&& grid[n - 1][i - 1] == opt_cell
+								&& grid[n - 2][i - 2] == opt_cell
+								&& grid[n - 3][i - 3] == opt_cell)
 							|| (n < 3
-								&& grid[n][i] == cell && grid[n + 1][i] == cell
-								&& grid[n + 2][i] == cell && grid[n + 3][i] == cell)
+								&& grid[n][i] == opt_cell && grid[n + 1][i] == opt_cell
+								&& grid[n + 2][i] == opt_cell && grid[n + 3][i] == opt_cell)
 							|| (i < 4
-								&& grid[n][i] == cell && grid[n][i + 1] == cell
-								&& grid[n][i + 2] == cell && grid[n][i + 3] == cell)
+								&& grid[n][i] == opt_cell && grid[n][i + 1] == opt_cell
+								&& grid[n][i + 2] == opt_cell && grid[n][i + 3] == opt_cell)
 						{
-							Some(cell.clone())
-						} else if n == 0 && grid[n].iter().any(|cell| cell == &Piece::Empty) {
-							Some(Piece::Empty)
+							Some(opt_cell.clone())
+						} else if n == 0 && grid[n].iter().any(|cell| cell == &None) {
+							Some(None)
 						} else {
 							continue;
 						}
@@ -136,7 +140,7 @@ impl Board {
 				};
 			}
 		}
-		Option::None
+		None
 	}
 }
 
@@ -151,10 +155,9 @@ mod test {
 
 		for i in 0..3 {
 			board.make_move(i + 1).unwrap();
-
 			board.make_move(0).unwrap();
 		}
-		let winner = board.get_winner().unwrap();
+		let winner = board.get_winner().unwrap().unwrap();
 		assert!(winner == Piece::Blue, "Winner is {}", winner);
 	}
 }

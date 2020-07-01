@@ -7,7 +7,7 @@ fn main() -> Result<(), std::io::Error> {
 	Ok(())
 }
 
-fn main_loop(board: &mut Board) -> Piece {
+fn main_loop(board: &mut Board) -> Option<Piece> {
 	let stdin = stdin();
 
 	let mut is_blue_turn = true;
@@ -36,11 +36,13 @@ fn main_loop(board: &mut Board) -> Piece {
 	winner
 }
 
-fn game_end_message(winner: Piece) {
+fn game_end_message(winner: Option<Piece>) {
 	match winner {
-		Piece::Red => println!("Red won"),
-		Piece::Blue => println!("Blue won"),
-		Piece::Empty => println!("It was a tie"),
+		Some(winner) => match winner {
+			Piece::Red => println!("Red won"),
+			Piece::Blue => println!("Blue won"),
+		},
+		None => println!("It was a tie"),
 	}
 }
 
