@@ -161,10 +161,16 @@ impl Board {
 		let mut best = -((self.width * self.height) as i32);
 		for col_index in 0..self.width {
 			if self.is_playable(col_index) {
-				self.make_move(col_index);
-				let score = -self.negamax_score();
-				if best < score {
-					best = score;
+				match self.make_move(col_index) {
+					Ok(_) => {
+						let score = -self.negamax_score();
+						if best < score {
+							best = score;
+						}
+					}
+					Err(_) => {
+						//Should be impossible
+					}
 				}
 			}
 		}
