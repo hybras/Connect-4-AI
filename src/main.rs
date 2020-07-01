@@ -24,17 +24,8 @@ fn main_loop(board: &mut Board) -> Piece {
 		let mut col = String::new();
 		stdin.read_line(&mut col).unwrap();
 		println!();
-		let col = col.trim().parse::<i8>().unwrap();
-		board
-			.make_move(
-				if is_blue_turn {
-					Piece::Blue
-				} else {
-					Piece::Red
-				},
-				col as usize,
-			)
-			.unwrap();
+		let col = col.trim().parse::<usize>().unwrap();
+		board.make_move(col).unwrap();
 		if let Some(won) = board.get_winner() {
 			winner = won;
 			break;
