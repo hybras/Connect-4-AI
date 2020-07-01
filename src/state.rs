@@ -81,7 +81,7 @@ impl Board {
 
 	/// The number of pieces, or height, in a given column of the board.
 	fn find_height(&self, col: usize) -> usize {
-		self.moves.iter().filter(|&&c| col == c as usize).count()
+		self.moves.iter().filter(|&&c| col == c).count()
 	}
 
 	/// Whether the number of pieces in a column is below max height
