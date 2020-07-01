@@ -73,10 +73,10 @@ impl Board {
 					Err("Column is filled".to_string())
 				}
 			} else {
-				Err("Column Filled".to_string())
+				Err("Board Filled".to_string())
 			}
 		} else {
-			Err(String::from("Column too large"))
+			Err("Column out of bound".to_string())
 		}
 	}
 
@@ -149,7 +149,9 @@ impl Board {
 			return 0;
 		}
 		for col_index in 0..self.width {
-			if self.is_playable(col_index) /*&& is a winning move*/{
+			if self.is_playable(col_index)
+			/*&& is a winning move*/
+			{
 				return (self.width * self.height + 1 - self.num_moves() / 2)
 					.try_into()
 					.unwrap();
