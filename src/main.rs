@@ -38,10 +38,7 @@ fn main_loop(board: &mut Board) -> Option<Piece> {
 
 fn game_end_message(winner: Option<Piece>) {
 	match winner {
-		Some(winner) => match winner {
-			Piece::Red => println!("Red won"),
-			Piece::Blue => println!("Blue won"),
-		},
+		Some(winner) => println!("{} won!", winner),
 		None => println!("It was a tie"),
 	}
 }
