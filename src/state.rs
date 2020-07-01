@@ -34,8 +34,9 @@ use std::fmt::{Display, Formatter};
 
 impl Display for Board {
 	fn fmt(&self, out: &mut Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
-		for col in 0..self.width {
-			for cell in 0..self.height {
+		let grid = self.as_2d();
+		for col in grid {
+			for cell in col {
 				write!(out, "{} ", cell)?;
 			}
 			writeln!(out)?;
@@ -53,7 +54,7 @@ impl Board {
 		}
 	}
 
-	fn moves(&self) -> u8 {
+	fn num_moves(&self) -> u8 {
 		self.moves.len() as u8
 	}
 
@@ -61,7 +62,7 @@ impl Board {
 		use std::convert::TryInto;
 
 		if col < self.width {
-			if self.moves() < (self.height * self.width).try_into().unwrap() {
+			if self.num_moves() < (self.height * self.width).try_into().unwrap() {
 				if self.is_playable(col) {
 					self.moves.push(col);
 					Ok(())
@@ -87,9 +88,11 @@ impl Board {
 	fn as_2d(&self) -> Vec<Vec<Piece>> {
 		let mut grid = vec![vec![Piece::Empty; self.height]; self.width];
 		let mut heights = vec![0; self.width];
+		let mut is_blue = true;
 		for &col_index in &self.moves {
-			grid[col_index][heights[col_index]] = Piece::Blue;
+			grid[col_index][heights[col_index]] = if is_blue { Piece::Blue } else { Piece::Red };
 			heights[col_index] += 1;
+			is_blue = !is_blue;
 		}
 		grid
 	}
