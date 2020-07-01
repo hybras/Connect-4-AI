@@ -6,7 +6,7 @@ pub enum Piece {
 }
 
 impl Display for Piece {
-	fn fmt(&self, out: &mut Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
+	fn fmt(&self, out: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
 		Ok(write!(
 			out,
 			"{}",
