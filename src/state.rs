@@ -57,16 +57,14 @@ impl Board {
 	}
 
 	/// The number of moves played so far
-	fn num_moves(&self) -> u8 {
-		self.moves.len() as u8
+	fn num_moves(&self) -> usize {
+		self.moves.len()
 	}
 
 	/// Function checks if a column is playable (ie not full) and records the move.
 	pub fn make_move(&mut self, col: usize) -> Result<(), String> {
-		use std::convert::TryInto;
-
 		if col < self.width {
-			if self.num_moves() < (self.height * self.width).try_into().unwrap() {
+			if self.num_moves() < self.height * self.width {
 				if self.is_playable(col) {
 					self.moves.push(col);
 					Ok(())
