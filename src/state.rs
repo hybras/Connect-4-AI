@@ -157,7 +157,6 @@ impl Board {
 					.unwrap();
 			}
 		}
-		let curr_moves = self.num_moves();
 		let mut best = -((self.width * self.height) as i32);
 		for col_index in 0..self.width {
 			if self.is_playable(col_index) {
@@ -167,6 +166,7 @@ impl Board {
 						if best < score {
 							best = score;
 						}
+						self.moves.pop();
 					}
 					Err(_) => {
 						//Should be impossible
@@ -174,7 +174,6 @@ impl Board {
 				}
 			}
 		}
-		self.moves.truncate(curr_moves);
 		best
 	}
 }
