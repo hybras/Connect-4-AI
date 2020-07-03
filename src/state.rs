@@ -62,6 +62,16 @@ impl Board {
 		self.moves.len()
 	}
 
+	/// The number of pieces, or height, in a given column of the board.
+	fn find_height(&self, col: usize) -> usize {
+		self.moves.iter().filter(|&&c| col == c).count()
+	}
+
+	/// Whether the number of pieces in a column is below max height
+	fn is_playable(&self, col: usize) -> bool {
+		self.find_height(col) < self.height
+	}
+
 	/// Function checks if a column is playable (ie not full) and records the move.
 	pub fn make_move(&mut self, col: usize) -> Result<(), String> {
 		if col < self.width {
@@ -78,16 +88,6 @@ impl Board {
 		} else {
 			Err("Column out of bound".to_string())
 		}
-	}
-
-	/// The number of pieces, or height, in a given column of the board.
-	fn find_height(&self, col: usize) -> usize {
-		self.moves.iter().filter(|&&c| col == c).count()
-	}
-
-	/// Whether the number of pieces in a column is below max height
-	fn is_playable(&self, col: usize) -> bool {
-		self.find_height(col) < self.height
 	}
 
 	/// The board as a 2d grid, instead of as a list of moves. The innermost vec is a columns. Access cells as `as_2d()[col][row]`
@@ -143,6 +143,18 @@ impl Board {
 		None
 	}
 
+	fn is_winning_move(&mut self, col: usize) -> Result<bool, ()> {
+		match self.make_move(col) {
+			Ok(_) => {
+				let winner = self.get_winner();
+				let res = winner.is_some() && winner.unwrap().is_some();
+				self.moves.pop();
+				Ok(res)
+			}
+			Err(_) => Err(()),
+		}
+	}
+
 	pub fn negamax_score(&mut self) -> i32 {
 		use std::convert::TryInto;
 		if self.num_moves() >= self.width * self.height {
@@ -173,18 +185,6 @@ impl Board {
 			}
 		}
 		best
-	}
-
-	fn is_winning_move(&mut self, col: usize) -> Result<bool, ()> {
-		match self.make_move(col) {
-			Ok(_) => {
-				let winner = self.get_winner();
-				let res = winner.is_some() && winner.unwrap().is_some();
-				self.moves.pop();
-				Ok(res)
-			}
-			Err(_) => Err(()),
-		}
 	}
 }
 
