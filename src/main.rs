@@ -3,7 +3,7 @@ use std::io::stdin;
 fn main() -> Result<(), std::io::Error> {
 	let mut board = Board::default();
 	let winner = main_loop(&mut board);
-	game_end_message(winner);
+	game_end_message(&winner, &board);
 	Ok(())
 }
 
@@ -37,7 +37,8 @@ fn main_loop(board: &mut Board) -> Option<Piece> {
 	winner
 }
 
-fn game_end_message(winner: Option<Piece>) {
+fn game_end_message(winner: &Option<Piece>, board: &Board) {
+	println!("{}", board);
 	match winner {
 		Some(winner) => println!("{} won!", winner),
 		None => println!("It was a tie"),
