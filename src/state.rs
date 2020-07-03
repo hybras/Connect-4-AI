@@ -131,7 +131,7 @@ impl Board {
 								&& grid[n][i + 2] == opt_cell && grid[n][i + 3] == opt_cell)
 						{
 							Some(opt_cell.clone())
-						} else if n == 0 && grid[n].iter().any(|cell| cell == &None) {
+						} else if n == 0 && !grid[n].iter().any(|cell| cell.is_none()) {
 							Some(None)
 						} else {
 							continue;
