@@ -178,8 +178,10 @@ impl Board {
 	fn is_winning_move(&mut self, col: usize) -> Result<bool, ()> {
 		match self.make_move(col) {
 			Ok(_) => {
+				let winner = self.get_winner();
+				let res = winner.is_some() && winner.unwrap().is_some();
 				self.moves.pop();
-				Ok(self.get_winner().is_some())
+				Ok(res)
 			}
 			Err(_) => Err(()),
 		}
