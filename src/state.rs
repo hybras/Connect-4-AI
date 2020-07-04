@@ -173,8 +173,8 @@ impl Board {
 			}
 		}
 		for col_index in 0..self.width {
-			if self.is_playable(&col_index) {
-				match self.make_move(col_index) {
+			if self.is_playable(&self.column_order[col_index]) {
+				match self.make_move(self.column_order[col_index]) {
 					Ok(_) => {
 						let score = -self.negamax_score(-range.end()..=-range.start());
 						if score >= *range.end() {
