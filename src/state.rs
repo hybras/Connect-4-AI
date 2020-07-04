@@ -73,15 +73,15 @@ impl Board {
 	}
 
 	/// Whether the number of pieces in a column is below max height
-	fn is_playable(&self, col: usize) -> bool {
-		self.heights[col] < self.height
+	fn is_playable(&self, col: &usize) -> bool {
+		self.heights[*col] < self.height
 	}
 
 	/// Function checks if a column is playable (ie not full) and records the move.
 	pub fn make_move(&mut self, col: usize) -> Result<(), String> {
 		if col < self.width {
 			if self.num_moves() < self.height * self.width {
-				if self.is_playable(col) {
+				if self.is_playable(&col) {
 					self.moves.push(col);
 					self.grid[col][self.heights[col]] = Some(if self.moves.len() % 2 == 0 {
 						Piece::Blue
@@ -173,7 +173,7 @@ impl Board {
 			}
 		}
 		for col_index in 0..self.width {
-			if self.is_playable(col_index) {
+			if self.is_playable(&col_index) {
 				match self.make_move(col_index) {
 					Ok(_) => {
 						let score = -self.negamax_score(-range.end()..=-range.start());
