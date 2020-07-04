@@ -1,10 +1,11 @@
+use bytes::{BufMut, BytesMut};
+use std::ops::RangeInclusive;
 /// A board piece. Used to represent the a Piece (and the absence of one) in a board grid, as well as the players.
 #[derive(Copy, Clone, PartialEq)]
 pub enum Piece {
 	Red,
 	Blue,
 }
-use std::ops::RangeInclusive;
 
 impl Display for Piece {
 	fn fmt(&self, out: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
@@ -26,6 +27,7 @@ pub struct Board {
 	column_order: Vec<usize>,
 	grid: Vec<Vec<Option<Piece>>>,
 	heights: Vec<usize>,
+	bitboard: BytesMut,
 }
 
 /// Constructs the default 6x7 board.
@@ -64,6 +66,9 @@ impl Board {
 			width,
 			height,
 			column_order,
+			bitboard: BytesMut::with_capacity(
+				width * (height+1) / 8 + if (width * (height+1)) % 8 == 0 { 0 } else { 1 },
+			),
 		}
 	}
 
