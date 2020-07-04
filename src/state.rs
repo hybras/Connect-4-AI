@@ -23,12 +23,13 @@ pub struct Board {
 	moves: Vec<usize>,
 	height: usize,
 	width: usize,
+	column_order: Vec<usize>,
 }
 
 /// Constructs the default 6x7 board.
 impl Default for Board {
 	fn default() -> Self {
-		Self::new()
+		Self::new(7,6)
 	}
 }
 use std::fmt::{Display, Formatter};
@@ -50,11 +51,16 @@ impl Display for Board {
 }
 
 impl Board {
-	fn new() -> Self {
+	fn new(width: usize, height: usize) -> Self {
+		let mut column_order = vec![0; width];
+		for i in 0..width {
+			column_order[i] = width / 2 + (1 - 2 * (i % 2)) * (i + 1) / 2;
+		}
 		Self {
 			moves: vec![],
-			width: 7,
-			height: 6,
+			width,
+			height,
+			column_order,
 		}
 	}
 
