@@ -30,7 +30,7 @@ fn main_loop(board: &mut Board) -> Option<Piece> {
 			winner = won;
 			break;
 		} else {
-			println!("Score: {}", board.negamax_score());
+			println!("Score: {}", board.negamax_score(-50..=50));
 			is_blue_turn = !is_blue_turn;
 		}
 	}

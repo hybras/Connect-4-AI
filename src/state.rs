@@ -4,6 +4,7 @@ pub enum Piece {
 	Red,
 	Blue,
 }
+use std::ops::RangeInclusive;
 
 impl Display for Piece {
 	fn fmt(&self, out: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
@@ -155,7 +156,7 @@ impl Board {
 		}
 	}
 
-	pub fn negamax_score(&mut self) -> i32 {
+	pub fn negamax_score(&mut self, mut range: RangeInclusive<i32>) -> i32 {
 		use std::convert::TryInto;
 		if self.num_moves() >= self.width * self.height {
 			return 0;
@@ -167,14 +168,24 @@ impl Board {
 					.unwrap();
 			}
 		}
-		let mut best = -((self.width * self.height) as i32);
+		let best = (self.width * self.height - 1 - self.num_moves() / 2) as i32;
+		if *range.end() > best {
+			if *range.start() >= best {
+				return best;
+			} else {
+				range = *range.start()..=best;
+			}
+		}
 		for col_index in 0..self.width {
 			if self.is_playable(col_index) {
 				match self.make_move(col_index) {
 					Ok(_) => {
-						let score = -self.negamax_score();
-						if best < score {
-							best = score;
+						let score = -self.negamax_score(-range.end()..=-range.start());
+						if score >= *range.end() {
+							return score;
+						}
+						if score > *range.start() {
+							range = score..=*range.end();
 						}
 						self.moves.pop();
 					}
