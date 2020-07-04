@@ -1,4 +1,4 @@
-use bytes::{BufMut, BytesMut};
+use bitvec::prelude as bits;
 use std::ops::RangeInclusive;
 /// A board piece. Used to represent the a Piece (and the absence of one) in a board grid, as well as the players.
 #[derive(Copy, Clone, PartialEq)]
@@ -27,7 +27,7 @@ pub struct Board {
 	column_order: Vec<usize>,
 	grid: Vec<Vec<Option<Piece>>>,
 	heights: Vec<usize>,
-	bitboard: BytesMut,
+	bitboard: bits::BitBox,
 }
 
 /// Constructs the default 6x7 board.
@@ -59,6 +59,12 @@ impl Board {
 		for i in 0..width {
 			column_order[i] = width / 2 + (1 - 2 * (i % 2)) * (i + 1) / 2;
 		}
+		let capacity = width * (height + 1) / 8
+			+ if (width * (height + 1)) % 8 == 0 {
+				0
+			} else {
+				1
+			};
 		Self {
 			moves: vec![],
 			grid: vec![vec![None; height]; width],
@@ -66,9 +72,7 @@ impl Board {
 			width,
 			height,
 			column_order,
-			bitboard: BytesMut::with_capacity(
-				width * (height+1) / 8 + if (width * (height+1)) % 8 == 0 { 0 } else { 1 },
-			),
+			bitboard: bits::bitbox![0;capacity],
 		}
 	}
 
@@ -84,6 +88,7 @@ impl Board {
 
 	/// Function checks if a column is playable (ie not full) and records the move.
 	pub fn make_move(&mut self, col: usize) -> Result<(), String> {
+		self.bitboard.chunks(self.height + 1).nth(col);
 		if col < self.width {
 			if self.num_moves() < self.height * self.width {
 				if self.is_playable(&col) {
