@@ -24,20 +24,21 @@ pub struct Board {
 	height: usize,
 	width: usize,
 	column_order: Vec<usize>,
+	grid: Vec<Vec<Option<Piece>>>,
+	heights: Vec<usize>,
 }
 
 /// Constructs the default 6x7 board.
 impl Default for Board {
 	fn default() -> Self {
-		Self::new(7,6)
+		Self::new(7, 6)
 	}
 }
 use std::fmt::{Display, Formatter};
 
 impl Display for Board {
 	fn fmt(&self, out: &mut Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
-		let grid = self.as_2d();
-		for col in grid {
+		for col in &self.grid {
 			for opt_cell in col {
 				match opt_cell {
 					Some(cell) => write!(out, "{} ", cell)?,
@@ -58,6 +59,8 @@ impl Board {
 		}
 		Self {
 			moves: vec![],
+			grid: vec![vec![None; height]; width],
+			heights: vec![0; width],
 			width,
 			height,
 			column_order,
@@ -69,14 +72,9 @@ impl Board {
 		self.moves.len()
 	}
 
-	/// The number of pieces, or height, in a given column of the board.
-	fn find_height(&self, col: usize) -> usize {
-		self.moves.iter().filter(|&&c| col == c).count()
-	}
-
 	/// Whether the number of pieces in a column is below max height
 	fn is_playable(&self, col: usize) -> bool {
-		self.find_height(col) < self.height
+		self.heights[col] < self.height
 	}
 
 	/// Function checks if a column is playable (ie not full) and records the move.
@@ -85,6 +83,12 @@ impl Board {
 			if self.num_moves() < self.height * self.width {
 				if self.is_playable(col) {
 					self.moves.push(col);
+					self.grid[col][self.heights[col]] = Some(if self.moves.len() % 2 == 0 {
+						Piece::Blue
+					} else {
+						Piece::Red
+					});
+					self.heights[col] += 1;
 					Ok(())
 				} else {
 					Err("Column is filled".to_string())
@@ -97,23 +101,9 @@ impl Board {
 		}
 	}
 
-	/// The board as a 2d grid, instead of as a list of moves. The innermost vec is a columns. Access cells as `as_2d()[col][row]`
-	fn as_2d(&self) -> Vec<Vec<Option<Piece>>> {
-		let mut grid = vec![vec![None; self.height]; self.width];
-		let mut heights = vec![0; self.width];
-		let mut is_blue = true;
-		for &col_index in &self.moves {
-			grid[col_index][heights[col_index]] =
-				Some(if is_blue { Piece::Blue } else { Piece::Red });
-			heights[col_index] += 1;
-			is_blue = !is_blue;
-		}
-		grid
-	}
-
 	/// The option represents whether a winner exists. `Some(Piece::Empty)` indicates a tie.
 	pub fn get_winner(&self) -> Option<Option<Piece>> {
-		let grid = self.as_2d();
+		let grid = &self.grid;
 		for n in 0..self.width {
 			for i in 0..self.height {
 				let opt_cell = grid[n][i];
