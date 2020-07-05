@@ -1,4 +1,3 @@
-use bitvec::prelude as bits;
 use std::ops::RangeInclusive;
 /// A board piece. Used to represent the a Piece (and the absence of one) in a board grid, as well as the players.
 #[derive(Copy, Clone, PartialEq)]
@@ -19,15 +18,24 @@ impl Display for Piece {
 		)?)
 	}
 }
+
+trait ImplBoard: Display {
+	fn new(width: usize, height: usize) -> Self;
+	fn is_playable(&self, col: &usize) -> bool;
+	fn is_winning_move(&self, col: &usize) -> Result<bool, ()>;
+	fn score(&self) -> i32;
+	fn get_winner(&self) -> Option<Option<Piece>>;
+	fn make_move(&mut self, col: usize) -> Result<(), String>;
+}
+
 /// The board of connect 4 game. Contains the board's height and width, as well as move history, as a Vec of columns.
 pub struct Board {
-	moves: Vec<usize>,
 	height: usize,
 	width: usize,
 	column_order: Vec<usize>,
+	moves: Vec<usize>,
 	grid: Vec<Vec<Option<Piece>>>,
 	heights: Vec<usize>,
-	bitboard: bits::BitBox,
 }
 
 /// Constructs the default 6x7 board.
@@ -59,12 +67,6 @@ impl Board {
 		for i in 0..width {
 			column_order[i] = width / 2 + (1 - 2 * (i % 2)) * (i + 1) / 2;
 		}
-		let capacity = width * (height + 1) / 8
-			+ if (width * (height + 1)) % 8 == 0 {
-				0
-			} else {
-				1
-			};
 		Self {
 			moves: vec![],
 			grid: vec![vec![None; height]; width],
@@ -72,7 +74,6 @@ impl Board {
 			width,
 			height,
 			column_order,
-			bitboard: bits::bitbox![0;capacity],
 		}
 	}
 
@@ -88,7 +89,6 @@ impl Board {
 
 	/// Function checks if a column is playable (ie not full) and records the move.
 	pub fn make_move(&mut self, col: usize) -> Result<(), String> {
-		self.bitboard.chunks(self.height + 1).nth(col);
 		if col < self.width {
 			if self.num_moves() < self.height * self.width {
 				if self.is_playable(&col) {
@@ -150,8 +150,8 @@ impl Board {
 		None
 	}
 
-	fn is_winning_move(&mut self, col: usize) -> Result<bool, ()> {
-		match self.make_move(col) {
+	fn is_winning_move(&mut self, col: &usize) -> Result<bool, ()> {
+		match self.make_move(*col) {
 			Ok(_) => {
 				let winner = self.get_winner();
 				let res = winner.is_some() && winner.unwrap().is_some();
@@ -168,7 +168,7 @@ impl Board {
 			return 0;
 		}
 		for col_index in 0..self.width {
-			if self.is_winning_move(col_index).is_ok() {
+			if self.is_winning_move(&col_index).is_ok() {
 				return (self.width * self.height + 1 - self.num_moves() / 2)
 					.try_into()
 					.unwrap();
