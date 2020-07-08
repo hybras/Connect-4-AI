@@ -19,7 +19,7 @@ impl Display for Piece {
 	}
 }
 
-trait ImplBoard: Display + Copy {
+trait ImplBoard: Display + Clone {
 	fn new(width: usize, height: usize) -> Self;
 
 	fn width(&self) -> usize;
@@ -35,7 +35,7 @@ trait ImplBoard: Display + Copy {
 	fn num_moves(&self) -> usize;
 	fn is_playable(&self, col: &usize) -> bool;
 	fn is_winning_move(&self, col: &usize) -> Result<bool, ()> {
-		let mut copy = *self;
+		let mut copy = self.clone();
 		match copy.make_move(*col) {
 			Ok(_) => {
 				let winner = copy.get_winner();

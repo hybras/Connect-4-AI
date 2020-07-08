@@ -1,6 +1,7 @@
 use super::{ImplBoard, Piece};
 use std::fmt::{Display, Formatter};
 
+#[derive(Clone)]
 struct FlatBoard {
 	height: usize,
 	width: usize,

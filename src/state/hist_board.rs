@@ -1,5 +1,6 @@
 use super::{ImplBoard, Piece};
 
+#[derive(Clone)]
 struct HistBoard {
 	height: usize,
 	width: usize,
