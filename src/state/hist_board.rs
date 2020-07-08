@@ -1,10 +1,10 @@
 use super::{ImplBoard, Piece};
 
 #[derive(Clone)]
-struct HistBoard {
+pub struct HistBoard {
 	height: usize,
 	width: usize,
-	moves: Vec<usize>,
+	pub (in super::hist_board) moves: Vec<usize>,
 }
 
 impl HistBoard {
