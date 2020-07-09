@@ -73,6 +73,6 @@ impl Display for HistBoard {
 
 impl Default for HistBoard {
 	fn default() -> Self {
-		Self::new(6, 7)
+		Self::new(7, 6)
 	}
 }
