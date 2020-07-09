@@ -21,12 +21,11 @@ impl Board for FlatBoard {
 			heights: vec![0; width],
 		}
 	}
-	fn is_playable(&self, col: &usize) -> bool {
-		self.board[*col]
-			.iter()
-			.filter(|cell| cell.is_some())
-			.count() <= self.height
+
+	fn find_height(&self, col: &usize) -> usize {
+		self.heights[*col]
 	}
+
 	fn get_winner(&self) -> Option<Option<Piece>> {
 		let grid = &self.board;
 		for n in 0..self.width {
@@ -74,25 +73,17 @@ impl Board for FlatBoard {
 		self.num_moves
 	}
 	fn make_move(&mut self, col: &usize) -> Result<(), String> {
-		if *col < self.width {
-			if self.num_moves() < self.height * self.width {
-				if self.is_playable(col) {
-					self.board[*col][self.heights[*col]] = Some(if self.is_blue_turn {
-						Piece::Blue
-					} else {
-						Piece::Red
-					});
-					self.heights[*col] += 1;
-					self.is_blue_turn = !self.is_blue_turn;
-					Ok(())
-				} else {
-					Err("Column is filled".to_string())
-				}
+		if self.is_playable(col) {
+			self.board[*col][self.heights[*col]] = Some(if self.is_blue_turn {
+				Piece::Blue
 			} else {
-				Err("Board Filled".to_string())
-			}
+				Piece::Red
+			});
+			self.heights[*col] += 1;
+			self.is_blue_turn = !self.is_blue_turn;
+			Ok(())
 		} else {
-			Err("Column out of bound".to_string())
+			Err("Column is filled".to_string())
 		}
 	}
 }

@@ -8,15 +8,6 @@ pub struct HistBoard {
 	flat: FlatBoard,
 }
 
-impl HistBoard {
-	fn find_height(&self, col: &usize) -> usize {
-		self.moves
-			.iter()
-			.filter(|&col_index| col_index == col)
-			.count()
-	}
-}
-
 impl Board for HistBoard {
 	fn new(width: usize, height: usize) -> Self {
 		Self {
@@ -25,8 +16,11 @@ impl Board for HistBoard {
 		}
 	}
 
-	fn is_playable(&self, col: &usize) -> bool {
-		self.find_height(col) <= self.height()
+	fn find_height(&self, col: &usize) -> usize {
+		self.moves
+			.iter()
+			.filter(|&col_index| col_index == col)
+			.count()
 	}
 
 	fn num_moves(&self) -> usize {
