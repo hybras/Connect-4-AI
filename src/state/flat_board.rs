@@ -107,39 +107,6 @@ impl Display for FlatBoard {
 
 impl Default for FlatBoard {
 	fn default() -> Self {
-		Self::new(6, 7)
-	}
-}
-
-use crate::state::hist_board::HistBoard;
-use std::convert::From;
-
-impl From<HistBoard> for FlatBoard {
-	fn from(hist_board: HistBoard) -> Self {
-		let mut flat_board = Self::new(hist_board.width(), hist_board.height());
-		for moveth in hist_board.moves {
-			flat_board.make_move(&moveth);
-		}
-		flat_board
-	}
-}
-
-#[cfg(test)]
-mod test {
-	use super::FlatBoard;
-	use crate::state::{hist_board::HistBoard, Board};
-
-	#[test]
-	fn hist_to_flat_conversion() {
-		let (height, width) = (6, 7);
-		let mut hist_board = HistBoard::new(width, height);
-		let moves = vec![0, 1, 2, 3, 4, 1, 3, 2];
-
-		for col in moves {
-			hist_board.make_move(&col);
-		}
-
-		let flat = FlatBoard::from(hist_board);
-		println!("{}", flat);
+		Self::new(7, 6)
 	}
 }
