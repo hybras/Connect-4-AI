@@ -28,20 +28,12 @@ impl Board for HistBoard {
 	}
 
 	fn make_move(&mut self, col: &usize) -> Result<(), String> {
-		if *col < self.width() {
-			if self.num_moves() < self.height() * self.width() {
-				if self.is_playable(col) {
-					self.moves.push(*col);
-					self.flat.make_move(col);
-					Ok(())
-				} else {
-					Err("Column is filled".to_string())
-				}
-			} else {
-				Err("Board Filled".to_string())
-			}
+		if self.is_playable(col) {
+			self.moves.push(*col);
+			self.flat.make_move(col)?;
+			Ok(())
 		} else {
-			Err("Column out of bound".to_string())
+			Err("Column is filled".to_string())
 		}
 	}
 	fn width(&self) -> usize {
