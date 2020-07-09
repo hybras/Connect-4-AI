@@ -34,6 +34,8 @@ pub trait Board: Display + Clone + Default {
 		column_order
 	}
 
+	fn find_height(&self, col: &usize) -> usize;
+
 	fn num_moves(&self) -> usize;
 	fn is_playable(&self, col: &usize) -> bool {
 		*col < self.width()
@@ -53,10 +55,10 @@ pub trait Board: Display + Clone + Default {
 
 	fn score(&self) -> i32 {
 		let capacity = (self.width() * self.height()) as i32;
-		self.score_in_range(-capacity..=capacity)
+		self.clone().score_in_range(-capacity..=capacity)
 	}
 
-	fn score_in_range(&self, mut range: RangeInclusive<i32>) -> i32 {
+	fn score_in_range(&mut self, mut range: RangeInclusive<i32>) -> i32 {
 		use std::convert::TryInto;
 		if self.num_moves() >= self.width() * self.height() {
 			return 0;
