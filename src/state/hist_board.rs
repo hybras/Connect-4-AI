@@ -16,6 +16,18 @@ impl HistBoard {
 	}
 }
 
+use std::fmt::{Display, Formatter};
+
+impl Display for HistBoard {
+	fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+		use super::flat_board::FlatBoard;
+		let flat: FlatBoard = self.clone().into();
+
+		writeln!(f, "{}", flat)?;
+		Ok(())
+	}
+}
+
 impl ImplBoard for HistBoard {
 	fn new(width: usize, height: usize) -> Self {
 		Self {
@@ -34,16 +46,10 @@ impl ImplBoard for HistBoard {
 	}
 
 	fn make_move(&mut self, col: &usize) -> Result<(), String> {
-		if col < self.width {
+		if *col < self.width {
 			if self.num_moves() < self.height * self.width {
-				if self.is_playable(&col) {
-					self.moves.push(col);
-					self.grid[col][self.heights[col]] = Some(if self.moves.len() % 2 == 0 {
-						Piece::Blue
-					} else {
-						Piece::Red
-					});
-					self.heights[col] += 1;
+				if self.is_playable(col) {
+					self.moves.push(*col);
 					Ok(())
 				} else {
 					Err("Column is filled".to_string())
@@ -55,16 +61,31 @@ impl ImplBoard for HistBoard {
 			Err("Column out of bound".to_string())
 		}
 	}
-}
-
-use std::fmt::{Display, Formatter};
-
-impl Display for HistBoard {
-	fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-		use super::flat_board::FlatBoard;
-		let flat: FlatBoard = self.clone().into();
-
-		writeln!(f, "{}", flat)?;
-		Ok(())
+	fn width(&self) -> usize {
+		self.width
+	}
+	fn height(&self) -> usize {
+		self.height
+	}
+	fn get_winner(&self) -> Option<Option<Piece>> {
+		use crate::state::flat_board::FlatBoard;
+		FlatBoard::from(self.clone()).get_winner()
+	}
+	fn column_order(&self) -> Vec<usize> {
+		let mut column_order = vec![0; self.width()];
+		for i in 0..self.width() {
+			column_order[i] = self.width() / 2 + (1 - 2 * (i % 2)) * (i + 1) / 2;
+		}
+		column_order
+	}
+	fn is_winning_move(&self, col: &usize) -> Result<bool, ()> {
+		let mut copy = self.clone();
+		match copy.make_move(col) {
+			Ok(_) => {
+				let winner = copy.get_winner();
+				Ok(winner.is_some() && winner.unwrap().is_some())
+			}
+			Err(_) => Err(()),
+		}
 	}
 }
