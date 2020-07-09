@@ -1,13 +1,13 @@
-use crate::state::{Board, Piece};
+use crate::state::{Board, FlatBoard, Piece};
 use std::io::stdin;
 fn main() -> Result<(), std::io::Error> {
-	let mut board = Board::default();
+	let mut board = FlatBoard::default();
 	let winner = main_loop(&mut board);
 	game_end_message(&winner, &board);
 	Ok(())
 }
 
-fn main_loop(board: &mut Board) -> Option<Piece> {
+fn main_loop(board: &impl Board) -> Option<Piece> {
 	let stdin = stdin();
 
 	let mut is_blue_turn = true;
@@ -25,19 +25,19 @@ fn main_loop(board: &mut Board) -> Option<Piece> {
 		stdin.read_line(&mut col).unwrap();
 		println!();
 		let col = col.trim().parse::<usize>().unwrap();
-		board.make_move(col).unwrap();
+		board.make_move(&col).unwrap();
 		if let Some(won) = board.get_winner() {
 			winner = won;
 			break;
 		} else {
-			println!("Score: {}", board.negamax_score(-50..=50));
+			println!("Score: {}", board.score());
 			is_blue_turn = !is_blue_turn;
 		}
 	}
 	winner
 }
 
-fn game_end_message(winner: &Option<Piece>, board: &Board) {
+fn game_end_message(winner: &Option<Piece>, board: &impl Board) {
 	println!("{}", board);
 	match winner {
 		Some(winner) => println!("{} won!", winner),
