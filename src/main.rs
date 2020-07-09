@@ -7,7 +7,7 @@ fn main() -> Result<(), std::io::Error> {
 	Ok(())
 }
 
-fn main_loop(board: &impl Board) -> Option<Piece> {
+fn main_loop(board: &mut impl Board) -> Option<Piece> {
 	let stdin = stdin();
 
 	let mut is_blue_turn = true;
