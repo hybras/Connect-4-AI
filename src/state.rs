@@ -21,7 +21,7 @@ impl Display for Piece {
 	}
 }
 
-trait Board: Display + Clone {
+pub trait Board: Display + Clone + Default {
 	fn new(width: usize, height: usize) -> Self;
 
 	fn width(&self) -> usize;
@@ -35,7 +35,11 @@ trait Board: Display + Clone {
 	}
 
 	fn num_moves(&self) -> usize;
-	fn is_playable(&self, col: &usize) -> bool;
+	fn is_playable(&self, col: &usize) -> bool {
+		*col < self.width()
+			&& self.num_moves() < self.height() * self.width()
+			&& self.find_height(col) < self.height()
+	}
 	fn is_winning_move(&self, col: &usize) -> Result<bool, ()> {
 		let mut copy = self.clone();
 		match copy.make_move(col) {
@@ -101,7 +105,12 @@ trait Board: Display + Clone {
 
 	/// Function checks if a column is playable (ie not full) and records the move.
 	fn make_move(&mut self, col: &usize) -> Result<(), String>;
+
+	// TODO fn current_player(&mut self) -> Option<Piece>
 }
 
 mod flat_board;
 mod hist_board;
+
+pub use self::flat_board::FlatBoard;
+pub use self::hist_board::HistBoard;
