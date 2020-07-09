@@ -6,6 +6,8 @@ pub enum Piece {
 	Blue,
 }
 
+use std::fmt::{Display, Formatter};
+
 impl Display for Piece {
 	fn fmt(&self, out: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
 		Ok(write!(
@@ -111,46 +113,4 @@ pub struct Board {
 	moves: Vec<usize>,
 	grid: Vec<Vec<Option<Piece>>>,
 	heights: Vec<usize>,
-}
-
-/// Constructs the default 6x7 board.
-impl Default for Board {
-	fn default() -> Self {
-		Self::new(7, 6)
-	}
-}
-use std::fmt::{Display, Formatter};
-
-impl Board {
-	fn new(width: usize, height: usize) -> Self {
-		Self {
-			moves: vec![],
-			grid: vec![vec![None; height]; width],
-			heights: vec![0; width],
-			width,
-			height,
-		}
-	}
-
-	/// Whether the number of pieces in a column is below max height
-	fn is_playable(&self, col: &usize) -> bool {
-		self.heights[*col] < self.height
-	}
-}
-
-#[cfg(test)]
-mod test {
-	use super::{Board, Piece, ImplBoard};
-
-	#[test]
-	fn test_blue_wins() {
-		let mut board: Board = Default::default();
-		board.make_move(0).unwrap();
-		for i in 0..3 {
-			board.make_move(i + 1).unwrap();
-			board.make_move(0).unwrap();
-		}
-		let winner = board.get_winner().unwrap().unwrap();
-		assert!(winner == Piece::Blue, "Winner is {}", winner);
-	}
 }
