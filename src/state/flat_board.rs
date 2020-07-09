@@ -1,8 +1,7 @@
 use super::{ImplBoard, Piece};
-use std::fmt::{Display, Formatter};
 
 #[derive(Clone)]
-struct FlatBoard {
+pub struct FlatBoard {
 	height: usize,
 	width: usize,
 	board: Vec<Vec<Option<Piece>>>,
@@ -13,11 +12,14 @@ impl ImplBoard for FlatBoard {
 		Self {
 			height,
 			width,
-			board: vec![vec![None; height];width],
+			board: vec![vec![None; height]; width],
 		}
 	}
 	fn is_playable(&self, col: &usize) -> bool {
-		self.board[*col].iter().filter(|cell| cell.is_some()).count()<=self.height
+		self.board[*col]
+			.iter()
+			.filter(|cell| cell.is_some())
+			.count() <= self.height
 	}
 	fn get_winner(&self) -> Option<Option<Piece>> {
 		let grid = &self.board;
@@ -58,6 +60,8 @@ impl ImplBoard for FlatBoard {
 	}
 }
 
+use std::fmt::{Display, Formatter};
+
 impl Display for FlatBoard {
 	fn fmt(&self, out: &mut Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
 		for col in &self.board {
@@ -70,5 +74,43 @@ impl Display for FlatBoard {
 			writeln!(out)?;
 		}
 		Ok(())
+	}
+}
+
+use crate::state::hist_board::HistBoard;
+use std::convert::From;
+
+impl From<HistBoard> for FlatBoard {
+	fn from(hist_board: HistBoard) -> Self {
+		let mut flat_board = Self::new(hist_board.width(), hist_board.height());
+		let heights = vec![0; hist_board.width()];
+		let mut is_blue = true;
+		for moveth in hist_board.moves {
+			flat_board.board[moveth][heights[moveth]] =
+				Some(if is_blue { Piece::Blue } else { Piece::Red });
+			is_blue = !is_blue;
+			heights[moveth] += 1;
+		}
+		flat_board
+	}
+}
+
+#[cfg(test)]
+mod test {
+	use super::FlatBoard;
+	use crate::state::{ImplBoard, hist_board::HistBoard};
+
+	#[test]
+	fn hist_to_flat_conversion() {
+		let (height, width) = (6, 7);
+		let mut hist_board = HistBoard::new(width, height);
+		let moves = vec![0, 1, 2, 3, 4, 1, 3, 2];
+
+		for col in moves {
+			hist_board.make_move(col);
+		}
+
+		let flat = FlatBoard::from(hist_board);
+		println!("{}", flat);
 	}
 }

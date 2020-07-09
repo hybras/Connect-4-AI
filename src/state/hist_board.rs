@@ -4,7 +4,7 @@ use super::{ImplBoard, Piece};
 pub struct HistBoard {
 	height: usize,
 	width: usize,
-	pub (in super::hist_board) moves: Vec<usize>,
+	pub moves: Vec<usize>,
 }
 
 impl HistBoard {
@@ -54,5 +54,17 @@ impl ImplBoard for HistBoard {
 		} else {
 			Err("Column out of bound".to_string())
 		}
+	}
+}
+
+use std::fmt::{Display, Formatter};
+
+impl Display for HistBoard {
+	fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+		use super::flat_board::FlatBoard;
+		let flat: FlatBoard = self.clone().into();
+
+		writeln!(f, "{}", flat)?;
+		Ok(())
 	}
 }
