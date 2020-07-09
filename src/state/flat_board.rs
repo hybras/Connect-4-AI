@@ -76,7 +76,7 @@ impl Board for FlatBoard {
 	fn make_move(&mut self, col: &usize) -> Result<(), String> {
 		if *col < self.width {
 			if self.num_moves() < self.height * self.width {
-				if self.is_playable(&col) {
+				if self.is_playable(col) {
 					self.board[*col][self.heights[*col]] = Some(if self.is_blue_turn {
 						Piece::Blue
 					} else {
@@ -111,6 +111,12 @@ impl Display for FlatBoard {
 			writeln!(out)?;
 		}
 		Ok(())
+	}
+}
+
+impl Default for FlatBoard {
+	fn default() -> Self {
+		Self::new(6, 7)
 	}
 }
 

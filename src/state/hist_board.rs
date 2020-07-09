@@ -1,10 +1,11 @@
 use super::{Board, Piece};
 
+use crate::state::flat_board::FlatBoard;
+
 #[derive(Clone)]
 pub struct HistBoard {
-	height: usize,
-	width: usize,
 	pub moves: Vec<usize>,
+	flat: FlatBoard,
 }
 
 impl HistBoard {
@@ -16,29 +17,16 @@ impl HistBoard {
 	}
 }
 
-use std::fmt::{Display, Formatter};
-
-impl Display for HistBoard {
-	fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-		use super::flat_board::FlatBoard;
-		let flat: FlatBoard = self.clone().into();
-
-		writeln!(f, "{}", flat)?;
-		Ok(())
-	}
-}
-
 impl Board for HistBoard {
 	fn new(width: usize, height: usize) -> Self {
 		Self {
-			height,
-			width,
 			moves: Vec::with_capacity(width * height),
+			flat: FlatBoard::new(width, height),
 		}
 	}
 
 	fn is_playable(&self, col: &usize) -> bool {
-		self.find_height(col) <= self.height
+		self.find_height(col) <= self.height()
 	}
 
 	fn num_moves(&self) -> usize {
@@ -46,10 +34,11 @@ impl Board for HistBoard {
 	}
 
 	fn make_move(&mut self, col: &usize) -> Result<(), String> {
-		if *col < self.width {
-			if self.num_moves() < self.height * self.width {
+		if *col < self.width() {
+			if self.num_moves() < self.height() * self.width() {
 				if self.is_playable(col) {
 					self.moves.push(*col);
+					self.flat.make_move(col);
 					Ok(())
 				} else {
 					Err("Column is filled".to_string())
@@ -62,14 +51,13 @@ impl Board for HistBoard {
 		}
 	}
 	fn width(&self) -> usize {
-		self.width
+		self.flat.width()
 	}
 	fn height(&self) -> usize {
-		self.height
+		self.flat.height()
 	}
 	fn get_winner(&self) -> Option<Option<Piece>> {
-		use crate::state::flat_board::FlatBoard;
-		FlatBoard::from(self.clone()).get_winner()
+		self.flat.get_winner()
 	}
 	fn column_order(&self) -> Vec<usize> {
 		let mut column_order = vec![0; self.width()];
@@ -87,5 +75,18 @@ impl Board for HistBoard {
 			}
 			Err(_) => Err(()),
 		}
+	}
+}
+use std::fmt::{Display, Formatter};
+
+impl Display for HistBoard {
+	fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+		Ok(writeln!(f, "{}", self.flat)?)
+	}
+}
+
+impl Default for HistBoard {
+	fn default() -> Self {
+		Self::new(6, 7)
 	}
 }
