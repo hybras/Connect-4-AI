@@ -1,4 +1,4 @@
-use super::{ImplBoard, Piece};
+use super::{Board, Piece};
 
 #[derive(Clone)]
 pub struct FlatBoard {
@@ -10,7 +10,7 @@ pub struct FlatBoard {
 	heights: Vec<usize>,
 }
 
-impl ImplBoard for FlatBoard {
+impl Board for FlatBoard {
 	fn new(width: usize, height: usize) -> Self {
 		Self {
 			height,
@@ -130,7 +130,7 @@ impl From<HistBoard> for FlatBoard {
 #[cfg(test)]
 mod test {
 	use super::FlatBoard;
-	use crate::state::{hist_board::HistBoard, ImplBoard};
+	use crate::state::{hist_board::HistBoard, Board};
 
 	#[test]
 	fn hist_to_flat_conversion() {

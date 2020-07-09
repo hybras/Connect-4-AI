@@ -21,7 +21,7 @@ impl Display for Piece {
 	}
 }
 
-trait ImplBoard: Display + Clone {
+trait Board: Display + Clone {
 	fn new(width: usize, height: usize) -> Self;
 
 	fn width(&self) -> usize;
@@ -105,12 +105,3 @@ trait ImplBoard: Display + Clone {
 
 mod flat_board;
 mod hist_board;
-
-/// The board of connect 4 game. Contains the board's height and width, as well as move history, as a Vec of columns.
-pub struct Board {
-	height: usize,
-	width: usize,
-	moves: Vec<usize>,
-	grid: Vec<Vec<Option<Piece>>>,
-	heights: Vec<usize>,
-}

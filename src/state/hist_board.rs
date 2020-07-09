@@ -1,4 +1,4 @@
-use super::{ImplBoard, Piece};
+use super::{Board, Piece};
 
 #[derive(Clone)]
 pub struct HistBoard {
@@ -28,7 +28,7 @@ impl Display for HistBoard {
 	}
 }
 
-impl ImplBoard for HistBoard {
+impl Board for HistBoard {
 	fn new(width: usize, height: usize) -> Self {
 		Self {
 			height,
