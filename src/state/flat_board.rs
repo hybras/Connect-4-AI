@@ -5,6 +5,9 @@ pub struct FlatBoard {
 	height: usize,
 	width: usize,
 	board: Vec<Vec<Option<Piece>>>,
+	num_moves: usize,
+	is_blue_turn: bool,
+	heights: Vec<usize>,
 }
 
 impl ImplBoard for FlatBoard {
@@ -13,6 +16,9 @@ impl ImplBoard for FlatBoard {
 			height,
 			width,
 			board: vec![vec![None; height]; width],
+			num_moves: 0,
+			is_blue_turn: true,
+			heights: vec![0; width],
 		}
 	}
 	fn is_playable(&self, col: &usize) -> bool {
@@ -58,6 +64,37 @@ impl ImplBoard for FlatBoard {
 		}
 		None
 	}
+	fn width(&self) -> usize {
+		self.width
+	}
+	fn height(&self) -> usize {
+		self.height
+	}
+	fn num_moves(&self) -> usize {
+		self.num_moves
+	}
+	fn make_move(&mut self, col: usize) -> Result<(), String> {
+		if col < self.width {
+			if self.num_moves() < self.height * self.width {
+				if self.is_playable(&col) {
+					self.board[col][self.heights[col]] = Some(if self.is_blue_turn {
+						Piece::Blue
+					} else {
+						Piece::Red
+					});
+					self.heights[col] += 1;
+					self.is_blue_turn = !self.is_blue_turn;
+					Ok(())
+				} else {
+					Err("Column is filled".to_string())
+				}
+			} else {
+				Err("Board Filled".to_string())
+			}
+		} else {
+			Err("Column out of bound".to_string())
+		}
+	}
 }
 
 use std::fmt::{Display, Formatter};
@@ -83,13 +120,8 @@ use std::convert::From;
 impl From<HistBoard> for FlatBoard {
 	fn from(hist_board: HistBoard) -> Self {
 		let mut flat_board = Self::new(hist_board.width(), hist_board.height());
-		let heights = vec![0; hist_board.width()];
-		let mut is_blue = true;
 		for moveth in hist_board.moves {
-			flat_board.board[moveth][heights[moveth]] =
-				Some(if is_blue { Piece::Blue } else { Piece::Red });
-			is_blue = !is_blue;
-			heights[moveth] += 1;
+			flat_board.make_move(moveth);
 		}
 		flat_board
 	}
@@ -98,7 +130,7 @@ impl From<HistBoard> for FlatBoard {
 #[cfg(test)]
 mod test {
 	use super::FlatBoard;
-	use crate::state::{ImplBoard, hist_board::HistBoard};
+	use crate::state::{hist_board::HistBoard, ImplBoard};
 
 	#[test]
 	fn hist_to_flat_conversion() {
