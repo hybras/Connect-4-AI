@@ -36,7 +36,7 @@ trait ImplBoard: Display + Clone {
 	fn is_playable(&self, col: &usize) -> bool;
 	fn is_winning_move(&self, col: &usize) -> Result<bool, ()> {
 		let mut copy = self.clone();
-		match copy.make_move(*col) {
+		match copy.make_move(col) {
 			Ok(_) => {
 				let winner = copy.get_winner();
 				Ok(winner.is_some() && winner.unwrap().is_some())
@@ -74,7 +74,7 @@ trait ImplBoard: Display + Clone {
 
 		for col_index in 0..self.width() {
 			if self.is_playable(&self.column_order()[col_index]) {
-				match self.make_move(column_order[col_index]) {
+				match self.make_move(&column_order[col_index]) {
 					Ok(_) => {
 						let score = -self.score_in_range(-range.end()..=-range.start());
 						if score >= *range.end() {
@@ -98,7 +98,7 @@ trait ImplBoard: Display + Clone {
 	fn get_winner(&self) -> Option<Option<Piece>>;
 
 	/// Function checks if a column is playable (ie not full) and records the move.
-	fn make_move(&mut self, col: usize) -> Result<(), String>;
+	fn make_move(&mut self, col: &usize) -> Result<(), String>;
 }
 
 mod flat_board;
@@ -140,13 +140,12 @@ impl Board {
 
 #[cfg(test)]
 mod test {
-	use super::{Board, Piece};
+	use super::{Board, Piece, ImplBoard};
 
 	#[test]
 	fn test_blue_wins() {
 		let mut board: Board = Default::default();
 		board.make_move(0).unwrap();
-
 		for i in 0..3 {
 			board.make_move(i + 1).unwrap();
 			board.make_move(0).unwrap();

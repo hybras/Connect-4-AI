@@ -73,16 +73,16 @@ impl ImplBoard for FlatBoard {
 	fn num_moves(&self) -> usize {
 		self.num_moves
 	}
-	fn make_move(&mut self, col: usize) -> Result<(), String> {
-		if col < self.width {
+	fn make_move(&mut self, col: &usize) -> Result<(), String> {
+		if *col < self.width {
 			if self.num_moves() < self.height * self.width {
 				if self.is_playable(&col) {
-					self.board[col][self.heights[col]] = Some(if self.is_blue_turn {
+					self.board[*col][self.heights[*col]] = Some(if self.is_blue_turn {
 						Piece::Blue
 					} else {
 						Piece::Red
 					});
-					self.heights[col] += 1;
+					self.heights[*col] += 1;
 					self.is_blue_turn = !self.is_blue_turn;
 					Ok(())
 				} else {
@@ -121,7 +121,7 @@ impl From<HistBoard> for FlatBoard {
 	fn from(hist_board: HistBoard) -> Self {
 		let mut flat_board = Self::new(hist_board.width(), hist_board.height());
 		for moveth in hist_board.moves {
-			flat_board.make_move(moveth);
+			flat_board.make_move(&moveth);
 		}
 		flat_board
 	}
@@ -139,7 +139,7 @@ mod test {
 		let moves = vec![0, 1, 2, 3, 4, 1, 3, 2];
 
 		for col in moves {
-			hist_board.make_move(col);
+			hist_board.make_move(&col);
 		}
 
 		let flat = FlatBoard::from(hist_board);
