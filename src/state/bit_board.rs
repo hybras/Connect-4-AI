@@ -49,6 +49,11 @@ impl Board for BitBoard {
 	fn make_move(&mut self, col: &usize) -> Result<(), String> {
 		todo!()
 	}
+	fn is_playable(&self, col: &usize) -> bool {
+		*col < self.width()
+			&& self.num_moves() < self.height() * self.width()
+			&& self.all_pieces[(col + 1) * (self.height() + 1)]
+	}
 }
 
 impl Default for BitBoard {
