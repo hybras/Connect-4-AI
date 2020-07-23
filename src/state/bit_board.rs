@@ -8,7 +8,7 @@ struct BitBoard {
 	all_pieces: bv::BitVec,
 	height: usize,
 	width: usize,
-	is_blue_turn: bool,
+	moves: usize,
 }
 
 impl Board for BitBoard {
@@ -27,7 +27,7 @@ impl Board for BitBoard {
 			width,
 			blue_pieces,
 			all_pieces,
-			is_blue_turn: false,
+			moves: 0,
 		}
 	}
 	fn width(&self) -> usize {
@@ -49,10 +49,10 @@ impl Board for BitBoard {
 		if self.is_playable(col) {
 			let idx = col * (self.height + 1) + self.find_height(col);
 			self.all_pieces.set(idx, true);
-			if self.is_blue_turn {
+			if self.moves % 2 == 0 {
 				self.blue_pieces.set(idx, true);
 			}
-			self.is_blue_turn = !self.is_blue_turn;
+			self.moves += 1;
 			Ok(())
 		} else {
 			Err("Not playable".into())
