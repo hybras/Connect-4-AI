@@ -8,6 +8,7 @@ struct BitBoard {
 	all_pieces: bv::BitVec,
 	height: usize,
 	width: usize,
+	is_blue_turn: bool,
 }
 
 impl Board for BitBoard {
@@ -26,6 +27,7 @@ impl Board for BitBoard {
 			width,
 			blue_pieces,
 			all_pieces,
+			is_blue_turn: false,
 		}
 	}
 	fn width(&self) -> usize {
