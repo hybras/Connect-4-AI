@@ -1,6 +1,8 @@
 use super::{Board, Piece};
 use bitvec::prelude as bv;
+use std::fmt::{Display, Formatter};
 
+#[derive(Clone)]
 struct BitBoard {
 	blue_pieces: bv::BitBox,
 	all_pieces: bv::BitBox,
@@ -52,5 +54,25 @@ impl Board for BitBoard {
 impl Default for BitBoard {
 	fn default() -> Self {
 		Self::new(7, 6)
+	}
+}
+
+impl Display for BitBoard {
+	fn fmt(&self, out: &mut Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
+		for (blue_col, all_col) in self
+			.blue_pieces
+			.chunks_exact(self.height() + 1)
+			.zip(self.all_pieces.chunks_exact(self.height() + 1))
+		{
+			for (blue, all) in blue_col.iter().take(self.height()).zip(all_col.iter()) {
+				if !all {
+					write!(out, "⚪ ")?
+				} else {
+					write!(out, "{} ", if *blue { Piece::Blue } else { Piece::Red })?
+				}
+			}
+			writeln!(out)?;
+		}
+		Ok(())
 	}
 }
