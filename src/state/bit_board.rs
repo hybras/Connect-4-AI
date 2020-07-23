@@ -10,7 +10,24 @@ struct BitBoard {
 
 impl Board for BitBoard {
 	fn new(width: usize, height: usize) -> Self {
-		todo!()
+		use std::iter::repeat;
+
+		let bit_size = width * (height + 1);
+
+		let blue_pieces = bv::BitVec::with_capacity(bit_size);
+		blue_pieces.extend(repeat(false).take(bit_size));
+		let blue_pieces = blue_pieces.into_boxed_bitslice();
+
+		let all_pieces = bv::BitVec::with_capacity(bit_size);
+		all_pieces.extend(repeat(false).take(bit_size));
+		let all_pieces = all_pieces.into_boxed_bitslice();
+
+		Self {
+			height,
+			width,
+			blue_pieces,
+			all_pieces,
+		}
 	}
 	fn width(&self) -> usize {
 		self.width
