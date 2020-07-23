@@ -14,11 +14,7 @@ fn main_loop(board: &mut impl Board) -> Option<Piece> {
 
 	let winner;
 	loop {
-		if is_blue_turn {
-			println!("It's blue's turn!");
-		} else {
-			println!("It's red's turn!");
-		}
+		println!("It's {}'s turn!", if is_blue_turn { "blue" } else { "red" });
 		println!("{}", board);
 		print!("Your move: ");
 		let mut col = String::new();
