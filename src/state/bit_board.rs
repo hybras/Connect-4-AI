@@ -46,12 +46,22 @@ impl Board for BitBoard {
 		todo!()
 	}
 	fn make_move(&mut self, col: &usize) -> Result<(), String> {
-		todo!()
+		if self.is_playable(col) {
+			let idx = col * (self.height + 1) + self.find_height(col);
+			self.all_pieces.set(idx, true);
+			if self.is_blue_turn {
+				self.blue_pieces.set(idx, true);
+			}
+			self.is_blue_turn = !self.is_blue_turn;
+			Ok(())
+		} else {
+			Err("Not playable".into())
+		}
 	}
 	fn is_playable(&self, col: &usize) -> bool {
 		*col < self.width()
 			&& self.num_moves() < self.height() * self.width()
-			&& self.all_pieces[(col + 1) * (self.height() + 1)]
+			&& self.all_pieces[(col + 1) * (self.height() + 1) - 2]
 	}
 }
 
@@ -78,5 +88,20 @@ impl Display for BitBoard {
 			writeln!(out)?;
 		}
 		Ok(())
+	}
+}
+
+#[cfg(test)]
+mod tests {
+	use super::BitBoard;
+	use crate::state::{Board, Piece};
+	#[test]
+	fn print_bitboard() {
+		let mut bb = BitBoard::default();
+		(0..3).for_each(|_| {
+			bb.make_move(&2).unwrap();
+			bb.make_move(&4).unwrap();
+		});
+		println!("{}", bb);
 	}
 }
