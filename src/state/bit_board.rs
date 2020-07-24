@@ -62,12 +62,17 @@ impl Board for BitBoard {
 
 		for (player, pieces) in player_to_pieces.iter() {
 			for &shift in shifts.iter() {
-				let [mut pieces0, mut pieces1, mut pieces2] =
-					[pieces.clone(), pieces.clone(), pieces.clone()];
+				let [pieces0, mut pieces1, mut pieces2, mut pieces3] = [
+					pieces.clone(),
+					pieces.clone(),
+					pieces.clone(),
+					pieces.clone(),
+				];
 				pieces1.rotate_right(shift);
 				pieces2.rotate_right(2 * shift);
-				pieces0 &= pieces1 & pieces2;
-				if pieces0.any() {
+				pieces3.rotate_right(3 * shift);
+				let test: bv::BitBox<bv::Lsb0, usize> = pieces0 & pieces1 & pieces2 & pieces3;
+				if test.any() {
 					return Some(Some(*player));
 				}
 			}
