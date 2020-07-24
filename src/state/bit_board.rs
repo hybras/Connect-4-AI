@@ -44,11 +44,41 @@ impl Board for BitBoard {
 		self.moves
 	}
 	fn get_winner(&self) -> Option<Option<Piece>> {
-		todo!()
+		if self.num_moves() == self.height() * self.width() {
+			return Some(None);
+		}
+		let shifts = [
+			self.height(),     // horizontal
+			self.height() - 1, // diagonal 1
+			self.height() + 1, // diagonal 2
+			1,                 // vertical
+		];
+		let mut red_pieces = self.blue_pieces.clone();
+		red_pieces ^= self.all_pieces.clone();
+		let player_to_pieces = [
+			(Piece::Blue, self.blue_pieces.clone()),
+			(Piece::Red, red_pieces),
+		];
+
+		for (player, pieces) in player_to_pieces.iter() {
+			for &shift in shifts.iter() {
+				let [mut pieces0, mut pieces1, mut pieces2] =
+					[pieces.clone(), pieces.clone(), pieces.clone()];
+				pieces1.rotate_right(shift);
+				pieces2.rotate_right(2 * shift);
+				pieces0 &= pieces1 & pieces2;
+				if pieces0.any() {
+					return Some(Some(*player));
+				}
+			}
+		}
+		
+
+		None
 	}
 	fn make_move(&mut self, col: &usize) -> Result<(), String> {
 		if self.is_playable(col) {
-			let idx = col * self.height + self.find_height(col);
+			let idx = col * self.height() + self.find_height(col);
 			self.all_pieces.set(idx, true);
 			if self.moves % 2 == 0 {
 				self.blue_pieces.set(idx, true);
