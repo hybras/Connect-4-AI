@@ -8,7 +8,7 @@ pub struct BitBoard {
 	all_pieces: bv::BitBox,
 	height: usize,
 	width: usize,
-	moves: usize,
+	num_moves: usize,
 }
 
 impl Board for BitBoard {
@@ -28,7 +28,7 @@ impl Board for BitBoard {
 			width,
 			blue_pieces,
 			all_pieces,
-			moves: 0,
+			num_moves: 0,
 		}
 	}
 	fn width(&self) -> usize {
@@ -41,7 +41,7 @@ impl Board for BitBoard {
 		self.all_pieces[col * self.height()..(col + 1) * (self.height())].count_ones()
 	}
 	fn num_moves(&self) -> usize {
-		self.moves
+		self.num_moves
 	}
 	fn get_winner(&self) -> Option<Option<Piece>> {
 		if self.num_moves() == self.height() * self.width() {
@@ -84,10 +84,10 @@ impl Board for BitBoard {
 		if self.is_playable(col) {
 			let idx = col * self.height() + self.find_height(col);
 			self.all_pieces.set(idx, true);
-			if self.moves % 2 == 0 {
+			if self.num_moves % 2 == 0 {
 				self.blue_pieces.set(idx, true);
 			}
-			self.moves += 1;
+			self.num_moves += 1;
 			Ok(())
 		} else {
 			Err("Not playable".into())
