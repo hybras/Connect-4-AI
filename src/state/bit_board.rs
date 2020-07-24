@@ -72,7 +72,6 @@ impl Board for BitBoard {
 				}
 			}
 		}
-		
 
 		None
 	}
@@ -120,7 +119,8 @@ impl Display for BitBoard {
 #[cfg(test)]
 mod tests {
 	use super::BitBoard;
-	use crate::state::Board;
+	use crate::state::{Board, Piece};
+
 	#[test]
 	fn print_bitboard() {
 		let mut bb = BitBoard::default();
@@ -129,5 +129,28 @@ mod tests {
 			bb.make_move(&4).unwrap();
 		});
 		println!("{}", bb);
+	}
+
+	#[test]
+	fn blue_wins() {
+		let mut bb = BitBoard::default();
+		(0..3).for_each(|_| {
+			bb.make_move(&2).unwrap();
+			bb.make_move(&4).unwrap();
+		});
+		bb.make_move(&2).unwrap();
+		assert!(Piece::Blue == bb.get_winner().unwrap().unwrap());
+	}
+
+	#[test]
+	fn red_wins() {
+		let mut bb = BitBoard::default();
+		(0..3).for_each(|_| {
+			bb.make_move(&2).unwrap();
+			bb.make_move(&4).unwrap();
+		});
+		bb.make_move(&1).unwrap();
+		bb.make_move(&4).unwrap();
+		assert!(Piece::Red == bb.get_winner().unwrap().unwrap());
 	}
 }
