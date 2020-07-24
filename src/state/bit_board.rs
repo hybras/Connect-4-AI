@@ -37,10 +37,10 @@ impl Board for BitBoard {
 		self.height
 	}
 	fn find_height(&self, col: &usize) -> usize {
-		todo!()
+		self.all_pieces[col * (self.height() + 1)..(col + 1) * (self.height() + 1)].count_ones()
 	}
 	fn num_moves(&self) -> usize {
-		todo!()
+		self.moves
 	}
 	fn get_winner(&self) -> Option<Option<Piece>> {
 		todo!()
@@ -57,11 +57,6 @@ impl Board for BitBoard {
 		} else {
 			Err("Not playable".into())
 		}
-	}
-	fn is_playable(&self, col: &usize) -> bool {
-		*col < self.width()
-			&& self.num_moves() < self.height() * self.width()
-			&& self.all_pieces[(col + 1) * (self.height() + 1) - 2]
 	}
 }
 
