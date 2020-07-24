@@ -4,8 +4,8 @@ use std::fmt::{Display, Formatter};
 
 #[derive(Clone)]
 struct BitBoard {
-	blue_pieces: bv::BitVec,
-	all_pieces: bv::BitVec,
+	blue_pieces: bv::BitBox,
+	all_pieces: bv::BitBox,
 	height: usize,
 	width: usize,
 	moves: usize,
@@ -19,6 +19,7 @@ impl Board for BitBoard {
 
 		let mut blue_pieces = bv::BitVec::with_capacity(bit_size);
 		blue_pieces.extend(repeat(false).take(bit_size));
+		let blue_pieces = blue_pieces.into_boxed_bitslice();
 
 		let all_pieces = blue_pieces.clone();
 
