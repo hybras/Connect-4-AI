@@ -3,7 +3,7 @@ use bitvec::prelude as bv;
 use std::fmt::{Display, Formatter};
 
 #[derive(Clone)]
-struct BitBoard {
+pub struct BitBoard {
 	blue_pieces: bv::BitBox,
 	all_pieces: bv::BitBox,
 	height: usize,

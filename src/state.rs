@@ -117,3 +117,4 @@ mod hist_board;
 
 pub use self::flat_board::FlatBoard;
 pub use self::hist_board::HistBoard;
+pub use self::bit_board::BitBoard;
