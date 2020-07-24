@@ -20,7 +20,7 @@ impl Board for BitBoard {
 		let mut blue_pieces = bv::BitVec::with_capacity(bit_size);
 		blue_pieces.extend(repeat(false).take(bit_size));
 
-		let mut all_pieces = blue_pieces.clone();
+		let all_pieces = blue_pieces.clone();
 
 		Self {
 			height,
