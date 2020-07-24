@@ -73,11 +73,11 @@ impl Display for BitBoard {
 			.chunks_exact(self.height())
 			.zip(self.all_pieces.chunks_exact(self.height()))
 		{
-			for (blue, all) in blue_col.iter().zip(all_col.iter()) {
-				if !all {
-					write!(out, "⚪ ")?
-				} else {
+			for (blue, is_filled) in blue_col.iter().zip(all_col.iter()) {
+				if *is_filled {
 					write!(out, "{} ", if *blue { Piece::Blue } else { Piece::Red })?
+				} else {
+					write!(out, "⚪ ")?
 				}
 			}
 			writeln!(out)?;
