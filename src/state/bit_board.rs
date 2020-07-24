@@ -15,7 +15,7 @@ impl Board for BitBoard {
 	fn new(width: usize, height: usize) -> Self {
 		use std::iter::repeat;
 
-		let bit_size = width * (height + 1);
+		let bit_size = width * height;
 
 		let mut blue_pieces = bv::BitVec::with_capacity(bit_size);
 		blue_pieces.extend(repeat(false).take(bit_size));
@@ -37,7 +37,7 @@ impl Board for BitBoard {
 		self.height
 	}
 	fn find_height(&self, col: &usize) -> usize {
-		self.all_pieces[col * (self.height() + 1)..(col + 1) * (self.height() + 1)].count_ones()
+		self.all_pieces[col * self.height()..(col + 1) * (self.height())].count_ones()
 	}
 	fn num_moves(&self) -> usize {
 		self.moves
@@ -47,7 +47,7 @@ impl Board for BitBoard {
 	}
 	fn make_move(&mut self, col: &usize) -> Result<(), String> {
 		if self.is_playable(col) {
-			let idx = col * (self.height + 1) + self.find_height(col);
+			let idx = col * self.height + self.find_height(col);
 			self.all_pieces.set(idx, true);
 			if self.moves % 2 == 0 {
 				self.blue_pieces.set(idx, true);
@@ -70,10 +70,10 @@ impl Display for BitBoard {
 	fn fmt(&self, out: &mut Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
 		for (blue_col, all_col) in self
 			.blue_pieces
-			.chunks_exact(self.height() + 1)
-			.zip(self.all_pieces.chunks_exact(self.height() + 1))
+			.chunks_exact(self.height())
+			.zip(self.all_pieces.chunks_exact(self.height()))
 		{
-			for (blue, all) in blue_col.iter().take(self.height()).zip(all_col.iter()) {
+			for (blue, all) in blue_col.iter().zip(all_col.iter()) {
 				if !all {
 					write!(out, "⚪ ")?
 				} else {
@@ -89,7 +89,7 @@ impl Display for BitBoard {
 #[cfg(test)]
 mod tests {
 	use super::BitBoard;
-	use crate::state::{Board, Piece};
+	use crate::state::Board;
 	#[test]
 	fn print_bitboard() {
 		let mut bb = BitBoard::default();
