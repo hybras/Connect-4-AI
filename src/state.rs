@@ -28,9 +28,11 @@ pub trait Board: Display + Clone + Default {
 	fn width(&self) -> usize;
 	fn height(&self) -> usize;
 	fn column_order(&self) -> Vec<usize> {
-		let mut column_order = vec![0; self.width()];
-		for i in 0..self.width() {
-			column_order[i] = self.width() / 2 + (1 - 2 * (i % 2)) * (i + 1) / 2;
+		let width = self.width();
+		let mut column_order = vec![0; width];
+		for i in 0..(width as i32) {
+			let temp = width as i32 / 2 + ((1 - 2 * (i % 2)) * (i + 1) / 2);
+			column_order[i as usize] = temp as usize;
 		}
 		column_order
 	}
