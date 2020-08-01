@@ -11,6 +11,14 @@ pub struct BitBoard {
 	num_moves: usize,
 }
 
+impl BitBoard {
+	pub(crate) fn reset(&mut self) {
+		self.blue_pieces.set_all(false);
+		self.all_pieces.set_all(false);
+		self.num_moves = 0;
+	}
+}
+
 impl Board for BitBoard {
 	fn new(width: usize, height: usize) -> Self {
 		use std::iter::repeat;
