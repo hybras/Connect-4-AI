@@ -55,8 +55,8 @@ pub trait Board: Display + Clone + Default {
 	}
 
 	fn score(&self) -> i32 {
-		let capacity = (self.width() * self.height()) as i32;
-		self.clone().score_in_range(-capacity..=capacity)
+		let bound = (self.width() * self.height()) as i32 / 2;
+		self.clone().score_in_range(-bound..=bound)
 	}
 
 	fn score_in_range(&mut self, mut range: RangeInclusive<i32>) -> i32 {
@@ -127,8 +127,6 @@ mod tests {
 	use std::fs::File;
 	use std::io::{prelude::*, BufReader, Lines};
 
-	/// TODO finish this
-	///
 	#[test]
 	fn score() {
 		let test_files = [(1, 1), (1, 2), (1, 3), (2, 1), (2, 2), (3, 1)];
