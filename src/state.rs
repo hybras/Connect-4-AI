@@ -124,10 +124,16 @@ pub use self::hist_board::HistBoard;
 
 #[cfg(test)]
 mod tests {
-	use super::{BitBoard, Board};
+	use super::{BitBoard, Board, FlatBoard};
 	use anyhow::{Context, Result as ahResult};
 	use std::fs::File;
 	use std::io::{prelude::*, BufReader, Lines};
+
+	#[test]
+	fn column_order() {
+		let columns = FlatBoard::default().column_order();
+		println!("{:?}", columns);
+	}
 
 	#[test]
 	fn score() {
