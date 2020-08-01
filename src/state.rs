@@ -1,4 +1,5 @@
 use std::ops::RangeInclusive;
+
 /// A board piece. Used to represent the a Piece (and the absence of one) in a board grid, as well as the players.
 #[derive(Copy, Clone, PartialEq)]
 pub enum Piece {
@@ -115,6 +116,51 @@ mod bit_board;
 mod flat_board;
 mod hist_board;
 
+pub use self::bit_board::BitBoard;
 pub use self::flat_board::FlatBoard;
 pub use self::hist_board::HistBoard;
-pub use self::bit_board::BitBoard;
+
+#[cfg(test)]
+mod tests {
+	use super::{BitBoard, Board};
+	use anyhow::{Context, Error, Result as ahResult};
+	use std::fs::File;
+	use std::io::{prelude::*, BufReader, Lines, Result};
+
+	/// TODO finish this
+	///
+	#[test]
+	fn score() {
+		let test_files = [(1, 1), (1, 2), (1, 3), (2, 1), (2, 2), (3, 1)];
+		let mut board = BitBoard::default();
+		for (l, r) in test_files.iter() {
+			let file_name = format!("test_cases/Test_L{}_R{}", l, r);
+			for case in open_test_file(&file_name)
+				.with_context(|| "failed to open test file")
+				.unwrap()
+			{
+				let case_ok = case.unwrap();
+				let mut case_split = case_ok.split_whitespace().take(2);
+				let seq = case_split.next().unwrap();
+				let score = case_split.next().unwrap();
+				let score: i32 = score.parse().unwrap();
+				score_matches(&mut board, seq, &score);
+				board.reset();
+			}
+		}
+	}
+
+	fn score_matches<T>(board: &mut T, seq: &str, score: &i32)
+	where
+		T: Board,
+	{
+		seq.chars()
+			.map(|s| format!("{}", s).parse::<u8>().unwrap())
+			.for_each(|col| board.make_move(&(col as usize)).unwrap());
+		let board_score = board.score();
+		assert_eq!(*score, board_score,);
+	}
+	fn open_test_file(path: &str) -> ahResult<Lines<BufReader<File>>> {
+		Ok(BufReader::new(File::open(path)?).lines())
+	}
+}
