@@ -4,7 +4,7 @@ use std::fmt::{Display, Formatter};
 
 #[derive(Clone)]
 pub struct AltBitBoard {
-	blue_pieces: bv::BitBox,
+	current_pieces: bv::BitBox,
 	all_pieces: bv::BitBox,
 	height: usize,
 	width: usize,
@@ -13,7 +13,7 @@ pub struct AltBitBoard {
 
 impl AltBitBoard {
 	pub(crate) fn reset(&mut self) {
-		self.blue_pieces.set_all(false);
+		self.current_pieces.set_all(false);
 		self.all_pieces.set_all(false);
 		self.num_moves = 0;
 	}
@@ -25,16 +25,16 @@ impl Board for AltBitBoard {
 
 		let bit_size = width * height;
 
-		let mut blue_pieces = bv::BitVec::with_capacity(bit_size);
-		blue_pieces.extend(repeat(false).take(bit_size));
-		let blue_pieces = blue_pieces.into_boxed_bitslice();
+		let mut current_pieces = bv::BitVec::with_capacity(bit_size);
+		current_pieces.extend(repeat(false).take(bit_size));
+		let current_pieces = current_pieces.into_boxed_bitslice();
 
-		let all_pieces = blue_pieces.clone();
+		let all_pieces = current_pieces.clone();
 
 		Self {
 			height,
 			width,
-			blue_pieces,
+			current_pieces,
 			all_pieces,
 			num_moves: 0,
 		}
@@ -61,10 +61,10 @@ impl Board for AltBitBoard {
 			self.height() + 1, // diagonal 2
 			1,                 // vertical
 		];
-		let mut red_pieces = self.blue_pieces.clone();
+		let mut red_pieces = self.current_pieces.clone();
 		red_pieces ^= self.all_pieces.clone();
 		let player_to_pieces = [
-			(Piece::Blue, self.blue_pieces.clone()),
+			(Piece::Blue, self.current_pieces.clone()),
 			(Piece::Red, red_pieces),
 		];
 
@@ -93,7 +93,7 @@ impl Board for AltBitBoard {
 			let idx = col * self.height() + self.find_height(col);
 			self.all_pieces.set(idx, true);
 			if self.num_moves % 2 == 0 {
-				self.blue_pieces.set(idx, true);
+				self.current_pieces.set(idx, true);
 			}
 			self.num_moves += 1;
 			Ok(())
@@ -112,7 +112,7 @@ impl Default for AltBitBoard {
 impl Display for AltBitBoard {
 	fn fmt(&self, out: &mut Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
 		for (blue_col, all_col) in self
-			.blue_pieces
+			.current_pieces
 			.chunks_exact(self.height())
 			.zip(self.all_pieces.chunks_exact(self.height()))
 		{
