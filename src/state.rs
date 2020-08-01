@@ -114,6 +114,7 @@ pub trait Board: Display + Clone + Default {
 	// TODO fn current_player(&mut self) -> Option<Piece>
 }
 
+mod alt_bit_board;
 mod bit_board;
 mod flat_board;
 mod hist_board;
