@@ -3,7 +3,7 @@ use bitvec::prelude as bv;
 use std::fmt::{Display, Formatter};
 
 #[derive(Clone)]
-pub struct BitBoard {
+pub struct AltBitBoard {
 	blue_pieces: bv::BitBox,
 	all_pieces: bv::BitBox,
 	height: usize,
@@ -11,7 +11,7 @@ pub struct BitBoard {
 	num_moves: usize,
 }
 
-impl BitBoard {
+impl AltBitBoard {
 	pub(crate) fn reset(&mut self) {
 		self.blue_pieces.set_all(false);
 		self.all_pieces.set_all(false);
@@ -19,7 +19,7 @@ impl BitBoard {
 	}
 }
 
-impl Board for BitBoard {
+impl Board for AltBitBoard {
 	fn new(width: usize, height: usize) -> Self {
 		use std::iter::repeat;
 
@@ -103,13 +103,13 @@ impl Board for BitBoard {
 	}
 }
 
-impl Default for BitBoard {
+impl Default for AltBitBoard {
 	fn default() -> Self {
 		Self::new(7, 6)
 	}
 }
 
-impl Display for BitBoard {
+impl Display for AltBitBoard {
 	fn fmt(&self, out: &mut Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
 		for (blue_col, all_col) in self
 			.blue_pieces
@@ -131,12 +131,12 @@ impl Display for BitBoard {
 
 #[cfg(test)]
 mod tests {
-	use super::BitBoard;
+	use super::AltBitBoard;
 	use crate::state::{Board, Piece};
 
 	#[test]
 	fn print_bitboard() {
-		let mut bb = BitBoard::default();
+		let mut bb = AltBitBoard::default();
 		(0..3).for_each(|_| {
 			bb.make_move(&2).unwrap();
 			bb.make_move(&4).unwrap();
@@ -146,7 +146,7 @@ mod tests {
 
 	#[test]
 	fn blue_wins() {
-		let mut bb = BitBoard::default();
+		let mut bb = AltBitBoard::default();
 		(0..3).for_each(|_| {
 			bb.make_move(&2).unwrap();
 			bb.make_move(&4).unwrap();
@@ -157,7 +157,7 @@ mod tests {
 
 	#[test]
 	fn red_wins() {
-		let mut bb = BitBoard::default();
+		let mut bb = AltBitBoard::default();
 		(0..3).for_each(|_| {
 			bb.make_move(&2).unwrap();
 			bb.make_move(&4).unwrap();
