@@ -123,9 +123,9 @@ pub use self::hist_board::HistBoard;
 #[cfg(test)]
 mod tests {
 	use super::{BitBoard, Board};
-	use anyhow::{Context, Error, Result as ahResult};
+	use anyhow::{Context, Result as ahResult};
 	use std::fs::File;
-	use std::io::{prelude::*, BufReader, Lines, Result};
+	use std::io::{prelude::*, BufReader, Lines};
 
 	/// TODO finish this
 	///
