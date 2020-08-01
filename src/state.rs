@@ -158,7 +158,7 @@ mod tests {
 			.map(|s| format!("{}", s).parse::<u8>().unwrap())
 			.for_each(|col| board.make_move(&(col as usize)).unwrap());
 		let board_score = board.score();
-		assert_eq!(*score, board_score,);
+		assert_eq!(*score, board_score, "Seq: {}", seq);
 	}
 	fn open_test_file(path: &str) -> ahResult<Lines<BufReader<File>>> {
 		Ok(BufReader::new(File::open(path)?).lines())
