@@ -157,10 +157,7 @@ mod tests {
 		}
 	}
 
-	fn score_matches<T>(board: &mut T, seq: &str, score: &i32)
-	where
-		T: Board,
-	{
+	fn score_matches(board: &mut impl Board, seq: &str, score: &i32) {
 		seq.chars()
 			.map(|s| format!("{}", s).parse::<u8>().unwrap())
 			.for_each(|col| board.make_move(&(col as usize)).unwrap());
