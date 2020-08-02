@@ -79,18 +79,18 @@ impl Board for AltBitBoard {
 
 		for (player, pieces) in player_to_pieces.iter() {
 			for &shift in shifts.iter() {
-				// TODO make this a loop
-				let [pieces0, mut pieces1, mut pieces2, mut pieces3] = [
-					pieces.clone(),
-					pieces.clone(),
-					pieces.clone(),
-					pieces.clone(),
-				];
-				pieces1.rotate_right(shift);
-				pieces2.rotate_right(2 * shift);
-				pieces3.rotate_right(3 * shift);
-				let test: bv::BitBox<bv::Lsb0, usize> = pieces0 & pieces1 & pieces2 & pieces3;
-				if test.any() {
+				let pieces_loop = vec![pieces.clone(); 4];
+				if pieces_loop
+					.into_iter()
+					.enumerate()
+					.fold_first(|(_, a), (idx_b, mut b)| {
+						b.rotate_right(idx_b * shift);
+						(0, a & b)
+					})
+					.unwrap()
+					.1
+					.any()
+				{
 					return Some(Some(*player));
 				}
 			}

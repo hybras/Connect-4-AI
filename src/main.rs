@@ -1,5 +1,7 @@
+#![feature(iterator_fold_self)]
 use crate::state::{BitBoard, Board, Piece};
 use std::io::stdin;
+
 fn main() -> Result<(), std::io::Error> {
 	let mut board = BitBoard::default();
 	let winner = main_loop(&mut board);
