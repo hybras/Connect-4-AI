@@ -61,15 +61,25 @@ impl Board for AltBitBoard {
 			self.height() + 1, // diagonal 2
 			1,                 // vertical
 		];
-		let mut red_pieces = self.current_pieces.clone();
-		red_pieces ^= self.all_pieces.clone();
+		let mut alt_pieces = self.current_pieces.clone();
+		alt_pieces ^= self.all_pieces.clone();
+		let alt_player;
+		let current_player = if self.num_moves() % 2 == 0 {
+			alt_player = Piece::Red;
+			Piece::Blue
+		} else {
+			alt_player = Piece::Blue;
+			Piece::Red
+		};
+
 		let player_to_pieces = [
-			(Piece::Blue, self.current_pieces.clone()),
-			(Piece::Red, red_pieces),
+			(current_player, self.current_pieces.clone()),
+			(alt_player, alt_pieces),
 		];
 
 		for (player, pieces) in player_to_pieces.iter() {
 			for &shift in shifts.iter() {
+				// TODO make this a loop
 				let [pieces0, mut pieces1, mut pieces2, mut pieces3] = [
 					pieces.clone(),
 					pieces.clone(),
@@ -92,9 +102,8 @@ impl Board for AltBitBoard {
 		if self.is_playable(col) {
 			let idx = col * self.height() + self.find_height(col);
 			self.all_pieces.set(idx, true);
-			if self.num_moves % 2 == 0 {
-				self.current_pieces.set(idx, true);
-			}
+			self.current_pieces.set(idx, true);
+			self.current_pieces = self.all_pieces.clone() ^ self.current_pieces.clone();
 			self.num_moves += 1;
 			Ok(())
 		} else {
@@ -111,14 +120,31 @@ impl Default for AltBitBoard {
 
 impl Display for AltBitBoard {
 	fn fmt(&self, out: &mut Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
-		for (blue_col, all_col) in self
+		let alt_player;
+		let current_player = if self.num_moves() % 2 == 0 {
+			alt_player = Piece::Red;
+			Piece::Blue
+		} else {
+			alt_player = Piece::Blue;
+			Piece::Red
+		};
+		for (current_player_col, all_col) in self
 			.current_pieces
 			.chunks_exact(self.height())
 			.zip(self.all_pieces.chunks_exact(self.height()))
 		{
-			for (blue, is_filled) in blue_col.iter().zip(all_col.iter()) {
+			for (current_players_piece, is_filled) in current_player_col.iter().zip(all_col.iter())
+			{
 				if *is_filled {
-					write!(out, "{} ", if *blue { Piece::Blue } else { Piece::Red })?
+					write!(
+						out,
+						"{} ",
+						if *current_players_piece {
+							current_player
+						} else {
+							alt_player
+						}
+					)?
 				} else {
 					write!(out, "⚪ ")?
 				}
