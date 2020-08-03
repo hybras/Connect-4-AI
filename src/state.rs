@@ -110,8 +110,6 @@ pub trait Board: Display + Clone + Default {
 
 	/// Function checks if a column is playable (ie not full) and records the move.
 	fn make_move(&mut self, col: &usize) -> Result<(), String>;
-
-	// TODO fn current_player(&mut self) -> Option<Piece>
 }
 
 mod alt_bit_board;
