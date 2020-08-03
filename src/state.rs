@@ -138,8 +138,8 @@ mod tests {
 
 	#[test]
 	fn score() {
-		let test_files = [(1, 1), (1, 2), (1, 3), (2, 1), (2, 2), (3, 1)];
-		let mut board = BitBoard::default();
+		let test_files = [(3, 1), (1, 1), (1, 2), (1, 3), (2, 1), (2, 2)];
+		let mut board = AltBitBoard::default();
 		for (l, r) in test_files.iter() {
 			let file_name = format!("test_cases/Test_L{}_R{}", l, r);
 			for case in open_test_file(&file_name)
