@@ -119,13 +119,14 @@ mod bit_board;
 mod flat_board;
 mod hist_board;
 
+pub use self::alt_bit_board::AltBitBoard;
 pub use self::bit_board::BitBoard;
 pub use self::flat_board::FlatBoard;
 pub use self::hist_board::HistBoard;
 
 #[cfg(test)]
 mod tests {
-	use super::{BitBoard, Board, FlatBoard};
+	use super::{AltBitBoard, BitBoard, Board, FlatBoard};
 	use anyhow::{Context, Result as ahResult};
 	use std::fs::File;
 	use std::io::{prelude::*, BufReader, Lines};
