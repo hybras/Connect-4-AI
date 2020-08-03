@@ -151,6 +151,7 @@ mod tests {
 				let seq = case_split.next().unwrap();
 				let score = case_split.next().unwrap();
 				let score: i32 = score.parse().unwrap();
+				println!("{}", seq);
 				score_matches(&mut board, seq, &score);
 				board.reset();
 			}
