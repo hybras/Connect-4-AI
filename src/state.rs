@@ -159,7 +159,7 @@ mod tests {
 
 	fn score_matches(board: &mut impl Board, seq: &str, score: &i32) {
 		seq.chars()
-			.map(|s| format!("{}", s).parse::<u8>().unwrap())
+			.map(|s| format!("{}", s).parse::<u8>().unwrap() - 1)
 			.for_each(|col| board.make_move(&(col as usize)).unwrap());
 		let board_score = board.score();
 		assert_eq!(*score, board_score, "Seq: {}", seq);
